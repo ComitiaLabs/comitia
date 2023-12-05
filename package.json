@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon src/index.ts"
+    "dev": "cross-env NODE_ENV=development nodemon backend/index.ts"
   },
   "dependencies": {
     "@t3-oss/env-core": "^0.7.1",
@@ -31,7 +31,9 @@
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "nodemon": "^3.0.2",
     "prettier": "^3.1.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.3.2"
   }
 }
