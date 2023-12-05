@@ -3,9 +3,8 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
     NODE_ENV: z.enum(['development', 'production', 'test']),
-    PORT: z.string().default('3000'),
+    PORT: z.string().default('3000')
   },
 
   /**
@@ -27,5 +26,5 @@ export const env = createEnv({
    * In order to solve these issues, we recommend that all new projects
    * explicitly specify this option as true.
    */
-  emptyStringAsUndefined: true,
+  emptyStringAsUndefined: true
 });
