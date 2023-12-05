@@ -6,7 +6,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon backend/index.ts"
+    "dev": "cross-env NODE_ENV=development nodemon backend/index.ts",
+    "build": "rimraf build && tsc -p tsconfig.json",
+    "start": "yarn build && pm2 start ecosystem.config.json --no-daemon"
   },
   "dependencies": {
     "@t3-oss/env-core": "^0.7.1",
@@ -17,6 +19,8 @@
     "helmet": "^7.1.0",
     "http-status": "^1.7.3",
     "morgan": "^1.10.0",
+    "pm2": "^5.3.0",
+    "rimraf": "^5.0.5",
     "winston": "^3.11.0",
     "zod": "^3.22.4"
   },
