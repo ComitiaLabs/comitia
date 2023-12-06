@@ -1,11 +1,8 @@
 import asyncHandler from 'express-async-handler';
-import { z } from 'zod';
-import { electionCreateSchema } from '../schemas/election';
+import electionConfig from '../election.config';
 
-export const createElection = asyncHandler<any, any, z.infer<typeof electionCreateSchema>['body']>(
-  async (req, res) => {
-    const info = req.body;
+export const getElectionInfo = asyncHandler(async (req, res) => {
+  const config = electionConfig;
 
-    res.status(200).json({ data: info });
-  }
-);
+  res.status(200).json({ data: config });
+});

@@ -1,10 +1,8 @@
 import express from 'express';
-import { createElection } from '../../controller/election';
-import { electionCreateSchema } from '../../schemas/election';
-import validate from '../../utils/validator';
+import { getElectionInfo } from '../../controller/election';
 
 const router = express.Router();
 
-router.route('/').post(validate(electionCreateSchema), createElection);
+router.route('/').get(getElectionInfo);
 
 export default router;
