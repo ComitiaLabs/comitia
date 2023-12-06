@@ -1,12 +1,15 @@
 import { z } from 'zod';
 
+export const imageType = z.string();
+export const imagesType = z.array(imageType);
 export const metadataType = z.object({
-  images: z.array(z.string()),
+  images: imagesType,
   info: z.string()
 });
 export const candidateType = z.object({
   name: z.string(),
-  image: z.string()
+  images: imagesType,
+  id: z.string()
 });
 export const voteType = z.object({
   name: z.string(),
@@ -20,7 +23,7 @@ export const voteParamsType = z.object({
 
 export const electionCreateSchema = z.object({
   body: z.object({
-    electionOptions: voteType,
+    options: voteType,
     metadata: metadataType,
     params: voteParamsType
   })
