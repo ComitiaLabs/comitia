@@ -11,7 +11,7 @@
     "dev:dwa": "cd dwa && yarn dev",
     "build:backend": "cd backend && yarn build",
     "build:dwa": "cd dwa && yarn build",
-    "build": "concurrently \"yarn build:backend\" \"yarn build:dwa\" && cp -r dwa/dist/ backend/build/public",
+    "build": "concurrently \"yarn build:backend\" \"yarn build:dwa\"",
     "start": "cd backend && yarn start"
   },
   "dependencies": {

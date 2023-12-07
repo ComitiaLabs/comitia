@@ -6,7 +6,6 @@ import config from './config/config';
 import morgan from './config/morgan';
 import routes from './routes/v1';
 import ApiError from './utils/ApiError';
-import path from 'path';
 
 const app = express();
 
@@ -14,8 +13,6 @@ if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
 }
-
-app.use(express.static(path.join(__dirname, '/public')));
 
 // set security HTTP headers
 app.use(helmet());
