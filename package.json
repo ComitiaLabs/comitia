@@ -6,13 +6,15 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:dwa\"",
+    "dev": "concurrently -p \"[{name}]\" -c \"bgBlue.bold,bgMagenta.bold\" -n backend,dwa \"yarn dev:backend\" \"yarn dev:dwa\"",
     "dev:backend": "cd backend && yarn dev",
     "dev:dwa": "cd dwa && yarn dev",
     "build:backend": "cd backend && yarn build",
     "build:dwa": "cd dwa && yarn build",
-    "build": "concurrently \"yarn build:backend\" \"yarn build:dwa\"",
-    "start": "cd backend && yarn start"
+    "build": "concurrently -p \"[{name}]\" -c \"bgBlue.bold,bgMagenta.bold\" -n backend,dwa \"yarn build:backend\" \"yarn build:dwa\"",
+    "start": "cd backend && yarn start",
+    "postinstall": "concurrently -p \"[{name}]\" -c \"bgBlue.bold,bgMagenta.bold\" -n backend,dwa \"cd backend && yarn install\" \"cd dwa && yarn install\"",
+    "con:info": "-p \"[{name}]\" -c \"bgBlue.bold,bgMagenta.bold\" -n backend,dwa"
   },
   "dependencies": {
     "concurrently": "^8.2.2"
