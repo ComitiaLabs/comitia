@@ -8,6 +8,7 @@ const server = app.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
 });
 
+// Web5 service initialization
 Web5Service.connect().then(() => {
   logger.info('Web5 service connected');
 });
