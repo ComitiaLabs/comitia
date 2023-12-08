@@ -48,3 +48,32 @@ export const protocolDefinition = {
     }
   }
 } satisfies ProtocolDefinition;
+
+export async function validateDIDHasProtocol(did: string) {
+  const { web5 } = Web5Service;
+
+  if (!web5) {
+    throw new Error('Web5 service not initialized');
+  }
+
+  console.log('Validating DID has protocol', did);
+
+  try {
+    const response = await web5.dwn.protocols.query({
+      from: did,
+      message: {
+        filter: {
+          protocol: 'https://comitia-help.com/protocol'
+        }
+      }
+    });
+
+    console.log(response);
+
+    return response.protocols.length > 0;
+  } catch (error) {
+    console.error('DID Protocol Install Validation Error:', error);
+    // This is most likely not an internal error, but rather a validation error
+    return false;
+  }
+}
