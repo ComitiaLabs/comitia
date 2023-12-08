@@ -1,30 +1,19 @@
-import { Server } from 'http';
 import app from './app';
 import config from './config/config';
 import logger from './config/logger';
+import Web5Service from './services/web5';
 
-let server: Server;
-
-server = app.listen(config.port, () => {
+// Express server initialization
+const server = app.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
 });
 
-const exitHandler = () => {
-  if (server) {
-    server.close(() => {
-      logger.info('Server closed');
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-};
+// Web5 service initialization
+Web5Service.connect().then(() => {
+  logger.info('Web5 service connected');
+});
 
-const unexpectedErrorHandler = (error: unknown) => {
-  logger.error(error);
-  exitHandler();
-};
-
+// Exception handling
 process.on('uncaughtException', unexpectedErrorHandler);
 process.on('unhandledRejection', unexpectedErrorHandler);
 
@@ -34,3 +23,19 @@ process.on('SIGTERM', () => {
     server.close();
   }
 });
+
+function unexpectedErrorHandler(error: unknown) {
+  logger.error(error);
+  exitHandler();
+}
+
+function exitHandler() {
+  if (server) {
+    server.close(() => {
+      logger.info('Server closed');
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+}
