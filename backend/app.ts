@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import httpStatus from 'http-status';
 import config from './config/config';
 import morgan from './config/morgan';
-import routes from './routes/v1';
+import routes from './routes';
 import ApiError from './utils/ApiError';
 
 const app = express();
@@ -28,7 +28,7 @@ app.use(cors());
 app.options('*', cors());
 
 // v1 api routes
-app.use('/v1', routes);
+app.use('/', routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
