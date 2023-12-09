@@ -49,6 +49,9 @@ export const protocolDefinition = {
   }
 } satisfies ProtocolDefinition;
 
+type ProtocolSchemas =
+  (typeof protocolDefinition.types)[keyof typeof protocolDefinition.types]['schema'];
+
 export async function validateDIDHasProtocol(did: string) {
   const { web5 } = Web5Service;
 
@@ -68,12 +71,30 @@ export async function validateDIDHasProtocol(did: string) {
       }
     });
 
-    console.log(response);
-
     return response.protocols.length > 0;
   } catch (error) {
     console.error('DID Protocol Install Validation Error:', error);
     // This is most likely not an internal error, but rather a validation error
     return false;
   }
+}
+
+export async function fetchRecords(did: string, schema?: ProtocolSchemas) {
+  const { web5 } = Web5Service;
+
+  if (!web5) {
+    throw new Error('Web5 service not initialized');
+  }
+
+  const response = await web5.dwn.records.query({
+    from: did,
+    message: {
+      filter: {
+        protocol: 'https://comitia-help.com/protocol',
+        ...(schema && { schema })
+      }
+    }
+  });
+
+  return response.records;
 }
