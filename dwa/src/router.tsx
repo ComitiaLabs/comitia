@@ -1,5 +1,5 @@
+import Layout from '@/components/layout/index.tsx';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
-import Layout from './components/layout/index.tsx';
 
 export const paths = {
   base: '/',
