@@ -2,7 +2,7 @@ import Replicate, { type Prediction } from 'replicate';
 
 import { env } from '../../config/env';
 import { fetchRecords } from '../protocols';
-import { MODEL_ID } from '../chat/constants';
+import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
 
 const replicate = new Replicate({
   auth: env.REPLICATE_API_TOKEN
@@ -10,6 +10,7 @@ const replicate = new Replicate({
 
 export class ChatSession {
   public did: string;
+  public isReady: boolean = false;
 
   private context: string = '';
   private userInfo: Record<string, unknown> = {};
@@ -21,10 +22,12 @@ export class ChatSession {
   async initialize() {
     // Fetch context and user records
     await Promise.all([this.fetchUserInfo(), this.fetchContext()]);
+
+    this.isReady = true;
   }
 
   async ask(question: string, onNewResponse: (response: Prediction) => void) {
-    return await replicate.run(
+    const response = await replicate.run(
       MODEL_ID,
       {
         input: {
@@ -32,8 +35,19 @@ export class ChatSession {
           systemPrompt: this.buildSystemPrompt()
         }
       },
-      onNewResponse
+      (res) => {
+        if (['processing', 'succeeded'].includes(res.status)) {
+          onNewResponse(res.output.join(''));
+        }
+      }
     );
+
+    if ((response as Prediction).status === 'failed') {
+      console.error('Failed to get response from model', response);
+      throw new Error('Failed to get response from model');
+    }
+
+    return response;
   }
 
   private async fetchUserInfo() {
@@ -53,5 +67,7 @@ export class ChatSession {
 
   private buildSystemPrompt() {
     // Builds system prompt from context and user info
+    // TODO: Enrich this with context and user info
+    return BASE_PROMPT;
   }
 }
