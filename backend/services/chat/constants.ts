@@ -6,4 +6,4 @@ export const BASE_PROMPT = `You are a helpful, respectful and honest assistant. 
   `;
 
 export const MODEL_ID =
-  'meta/llama-2-7b-chat:13c3cdee13ee059ab779f0291d29054dab00a47dad8261375654de5540165fb0';
+  'meta/llama-2-13b-chat:f4e2de70d66816a838a89eeeb621910adffb0dd0baba3976c96980970978018d';
