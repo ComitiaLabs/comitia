@@ -1,8 +1,8 @@
 import Replicate, { type Prediction } from 'replicate';
 
-import { env } from '../config/env';
-import { fetchRecords } from './protocols';
-import { MODEL_ID } from './chat/constants';
+import { env } from '../../config/env';
+import { fetchRecords } from '../protocols';
+import { MODEL_ID } from '../chat/constants';
 
 const replicate = new Replicate({
   auth: env.REPLICATE_API_TOKEN
