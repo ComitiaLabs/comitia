@@ -1,6 +1,6 @@
 import { Web5 } from '@web5/api';
 import { webcrypto } from 'node:crypto';
-import { protocolDefinitions } from './protocols';
+import { protocolDefinition } from './protocols';
 
 // @ts-expect-error - polyfill
 if (!globalThis.crypto) globalThis.crypto = webcrypto;
@@ -21,14 +21,12 @@ class Web5Service {
     this.did = did;
     this.web5 = web5;
 
-    // Install protocols
-    for (const protocol of protocolDefinitions) {
-      await web5.dwn.protocols.configure({
-        message: {
-          definition: protocol
-        }
-      });
-    }
+    // Install protocol
+    await web5.dwn.protocols.configure({
+      message: {
+        definition: protocolDefinition
+      }
+    });
   }
 }
 
