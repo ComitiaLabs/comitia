@@ -1,13 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import useSubscription from './useSubscription';
 
-const useGetChat = (chatId: string) => {
-  const [loading] = useState(false);
-  const [chats] = useState([
-    { id: '1', timestamp: 1, chatId, message: 'Hello', senderId: '1' },
-    { id: '2', timestamp: 1, chatId, message: 'Hi', senderId: '2' },
-    { id: '3', timestamp: 1, chatId, message: 'Bye', senderId: '1' },
-  ]);
-  return { chats, loading };
+export type Chat = { message: string; isMe: boolean };
+
+const useGetChat = () => {
+  const [isThinking, setIsThinking] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [chats, setChats] = useState<Chat[]>([]);
+
+  const send = (message: string) => {
+    setLoading(true);
+    socket.emit('message', message);
+
+    const newMessage: Chat = { message, isMe: true };
+    setChats(prev => [...prev, newMessage]);
+
+    setIsThinking(true);
+  };
+
+  const { socket } = useSubscription();
+
+  useEffect(() => {
+    socket.on('response', function (response) {
+      console.log('chat response:', response);
+      const newMessage: Chat = { message: response, isMe: false };
+      setChats(prev => [...prev, newMessage]);
+
+      setLoading(false);
+      setIsThinking(false);
+    });
+    socket.on('ready', function (response) {
+      console.log('chat ready:', response);
+      setLoading(false);
+    });
+
+    return () => {
+      socket.off('response');
+      socket.off('ready');
+    };
+  }, [socket]);
+
+  return { chats, loading, send, isThinking };
 };
 
 export default useGetChat;

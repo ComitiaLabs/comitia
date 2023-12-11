@@ -4,10 +4,9 @@ import useGetChat from '@/hook/useGetChat';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Loader2Icon } from 'lucide-react';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 interface IBubble {
-  text: string;
+  text: React.ReactNode;
   isMe: boolean;
 }
 const Bubble = (props: IBubble) => {
@@ -28,42 +27,51 @@ const Bubble = (props: IBubble) => {
 };
 
 const Chat = () => {
-  const { id } = useParams();
-  const { chats } = useGetChat(`${id}`);
-
-  const userID = '1';
-
-  const [loading, setLoading] = useState(false);
+  // const { id } = useParams();
+  const { chats, loading, send, isThinking } = useGetChat();
+  const [message, setMessage] = useState('what is 2 + 2');
 
   const sendHandler = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    send(message);
+  };
+
+  const updateText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
   };
 
   return (
     <>
-      <div className="flex flex-col gap-0 ">
-        {chats.map(chat => {
+      <div className="flex flex-col gap-2">
+        {chats.map((chat, ind) => {
           return (
             <Bubble
-              key={chat.id}
+              // TODO: add key
+              key={ind}
               text={chat.message}
-              isMe={chat.senderId === userID}
+              isMe={chat.isMe}
             />
           );
         })}
+        {isThinking && (
+          <Bubble
+            text={<Loader2Icon className="animate-spin" />}
+            isMe={false}
+          />
+        )}
       </div>
 
       <div className="flex items-center">
-        <Textarea className="rounded-none rounded-l-lg" />
+        <Textarea
+          className="rounded-none rounded-l-lg"
+          value={message}
+          onChange={updateText}
+        />
 
         <Button
           variant="default"
           size="icon"
           className="h-full rounded-none rounded-r-lg"
-          disabled={loading}
+          disabled={loading || !message || message.length < 1}
           onClick={sendHandler}
         >
           {!loading ? (
