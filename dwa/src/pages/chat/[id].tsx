@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
+import useGetChatList from '@/hook/useGetChatList';
 import { cn } from '@/lib/utils';
-import { ChevronUpCircleIcon, Loader2Icon } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 interface IBubble {
   text: React.ReactNode;
@@ -26,8 +28,21 @@ const Bubble = (props: IBubble) => {
   );
 };
 
+const PulsingDots = ({ count = 3 }) => {
+  return (
+    <div className="flex gap-0 items-center justify-center">
+      {Array.from({ length: count }).map((_, ind) => (
+        <Dot
+          key={ind}
+          className={`animate-bounce fill-current  h-4 w-4`}
+          style={{ animationDelay: `${ind * 100}ms` }}
+        />
+      ))}
+    </div>
+  );
+};
+
 const Chat = () => {
-  // const { id } = useParams();
   const { chats, loading, send, isThinking } = useGetChat();
   const [message, setMessage] = useState('what is 2 + 2');
 
@@ -52,12 +67,7 @@ const Chat = () => {
             />
           );
         })}
-        {isThinking && (
-          <Bubble
-            text={<Loader2Icon className="animate-spin" />}
-            isMe={false}
-          />
-        )}
+        {isThinking && <Bubble text={<PulsingDots />} isMe={false} />}
       </div>
 
       <div className="flex items-center">
@@ -85,4 +95,20 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+const Wrapper = () => {
+  const { id } = useParams();
+  const { isChatValid } = useGetChatList();
+  const validity = useMemo(() => isChatValid(id), [id, isChatValid]);
+
+  if (!validity) {
+    return <div>Invalid Chat</div>;
+  }
+
+  return (
+    <>
+      <Chat />
+    </>
+  );
+};
+
+export default Wrapper;
