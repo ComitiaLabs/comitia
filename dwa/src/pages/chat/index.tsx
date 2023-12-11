@@ -98,7 +98,7 @@ const Chat = () => {
         </>
       )}
 
-      <div className="col-span-full md:col-start-2 p-3 lg:px-16 xl:px-60 2xl:px-96 h-full flex flex-col justify-between">
+      <div className="col-span-full md:col-start-2 p-3 lg:px-16 xl:px-60 2xl:px-96 h-full flex flex-col justify-between overflow-auto">
         {outlet || 'Please select a chat from the sidebar'}
       </div>
     </div>

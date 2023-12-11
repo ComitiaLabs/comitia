@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
 import useGetChatList from '@/hook/useGetChatList';
@@ -56,21 +57,24 @@ const Chat = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        {chats.map((chat, ind) => {
-          return (
-            <Bubble
-              // TODO: add key
-              key={ind}
-              text={chat.message}
-              isMe={chat.isMe}
-            />
-          );
-        })}
-        {isThinking && <Bubble text={<PulsingDots />} isMe={false} />}
-      </div>
+      <ScrollArea>
+        <div className="flex flex-col gap-2 pr-3">
+          {chats.map((chat, ind) => {
+            return (
+              <Bubble
+                // TODO: add key
+                key={ind}
+                text={chat.message}
+                isMe={chat.isMe}
+              />
+            );
+          })}
+          {isThinking && <Bubble text={<PulsingDots />} isMe={false} />}
+          {/* <ScrollDown parentRef={ref} /> */}
+        </div>
+      </ScrollArea>
 
-      <div className="flex items-center">
+      <div className="flex items-center pt-2">
         <Textarea
           className="rounded-none rounded-l-lg"
           value={message}
