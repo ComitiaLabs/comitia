@@ -36,7 +36,7 @@ export class ChatSession {
         }
       },
       (res) => {
-        if (['processing', 'succeeded'].includes(res.status)) {
+        if (['succeeded'].includes(res.status)) {
           onNewResponse(res.output.join(''));
         }
       }

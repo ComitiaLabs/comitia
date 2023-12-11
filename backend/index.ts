@@ -17,13 +17,14 @@ const io = new Server(server, {
     origin: '*'
   }
 });
-initializeWS(io).then(() => {
-  logger.info('Websocket server initialized');
-});
 
 // Web5 service initialization
 Web5Service.connect().then(() => {
   logger.info('Web5 service connected');
+
+  initializeWS(io).then(() => {
+    logger.info('Websocket server initialized');
+  });
 });
 
 // Exception handling
