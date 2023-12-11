@@ -106,7 +106,7 @@ const Wrapper = () => {
   const validity = useMemo(() => isChatValid(id), [id, isChatValid]);
 
   if (!validity) {
-    return <div>Invalid Chat</div>;
+    return <span>Please select a chat from the sidebar</span>;
   }
 
   return (
