@@ -1,5 +1,5 @@
 import type { ProtocolDefinition } from '@tbd54566975/dwn-sdk-js';
-import logger from '../config/logger';
+import logger, { didPrint } from '../config/logger';
 import Web5Service from './web5';
 
 /**
@@ -60,7 +60,7 @@ export async function validateDIDHasProtocol(did: string) {
     throw new Error('Web5 service not initialized');
   }
 
-  logger.info('Validating DID has protocol', did.slice(0, 20));
+  logger.info(`Validating DID has protocol - ${didPrint(did)}`);
 
   try {
     const response = await web5.dwn.protocols.query({
