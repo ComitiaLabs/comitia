@@ -23,6 +23,9 @@ const useGetChat = () => {
   useEffect(() => {
     socket.on('response', function (response) {
       console.log('chat response:', response);
+
+      if (message.length <= 0) return;
+
       const newMessage: Chat = { message: response, isMe: false };
       setChats(prev => [...prev, newMessage]);
 
