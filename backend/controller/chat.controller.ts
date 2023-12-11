@@ -1,20 +1,19 @@
 import { Server } from 'socket.io';
+import logger, { didPrint } from '../config/logger';
 import { ChatSession } from '../services/chat';
 
 export function handleChat(io: Server) {
   io.on('connection', async (socket) => {
+    logger.info(`User ${didPrint(socket.data.did)} connected`);
     const session = new ChatSession(socket.data.did);
 
-    session
-      .initialize()
-      .then(() => {
-        // Session is ready for chat
-        socket.emit('ready', 'Chat session is ready');
-      })
-      .catch((error) => {
-        console.error('Failed to initialize chat session', error);
-        socket.emit('error', 'Failed to initialize chat session');
-      });
+    try {
+      await session.initialize();
+      socket.emit('ready', 'Chat session is ready');
+    } catch (error) {
+      logger.error('Failed to initialize chat session', error);
+      socket.emit('error', 'Failed to initialize chat session');
+    }
 
     // Handle chat messages here
     socket.on('message', async (message: string) => {
@@ -35,7 +34,7 @@ export function handleChat(io: Server) {
 
     // Handle chat teardown here
     socket.on('disconnect', () => {
-      console.log(`User ${socket.data.did} disconnected`);
+      logger.info(`User ${didPrint(socket.data.did)} disconnected`);
     });
   });
 }
