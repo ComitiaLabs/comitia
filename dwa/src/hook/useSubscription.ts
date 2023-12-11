@@ -6,14 +6,18 @@ const DID =
 
 const socketUrl = 'localhost:3000';
 
-const useSubscription = () => {
-  const socket = io(socketUrl, {
-    auth: {
-      did: DID,
-    },
-    transports: ['websocket'],
-  });
+const socket = io(socketUrl, {
+  auth: {
+    did: DID,
+  },
+});
 
+const useSubscription = () => {
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
   useEffect(() => {
     socket.on('connection', function () {
       console.log('client connected');
@@ -37,7 +41,7 @@ const useSubscription = () => {
       socket.off('connect_timeout');
       socket.off('error');
     };
-  });
+  }, []);
 
   return { socket };
 };
