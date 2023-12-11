@@ -21,10 +21,10 @@ const useGetChat = () => {
   const { socket } = useSubscription();
 
   useEffect(() => {
-    socket.on('response', function (response) {
+    socket.on('response', function (response: string) {
       console.log('chat response:', response);
 
-      if (message.length <= 0) return;
+      if (response.length <= 0) return;
 
       const newMessage: Chat = { message: response, isMe: false };
       setChats(prev => [...prev, newMessage]);
@@ -32,7 +32,7 @@ const useGetChat = () => {
       setLoading(false);
       setIsThinking(false);
     });
-    socket.on('ready', function (response) {
+    socket.on('ready', function (response: string) {
       console.log('chat ready:', response);
       setLoading(false);
     });
