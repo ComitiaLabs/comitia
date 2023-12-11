@@ -4,6 +4,7 @@ import { ChatSession } from '../services/chat';
 
 export function handleChat(io: Server) {
   io.on('connection', async (socket) => {
+    logger.info(`User ${didPrint(socket.data.did)} connected`);
     const session = new ChatSession(socket.data.did);
 
     try {
