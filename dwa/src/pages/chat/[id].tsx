@@ -17,8 +17,8 @@ const Bubble = (props: IBubble) => {
       <div className={cn('flex justify-end', !props.isMe && 'justify-start')}>
         <div
           className={cn(
-            'bg-green-400 text-white rounded-md p-3',
-            !props.isMe && 'bg-red-400',
+            'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3',
+            !props.isMe && 'bg-secondary text-secondary-foreground',
           )}
         >
           {props.text}

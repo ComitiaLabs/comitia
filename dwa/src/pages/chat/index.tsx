@@ -13,7 +13,7 @@ const MenuMd = () => {
   const { id: currentPage } = useParams();
 
   return (
-    <div className="p-3 bg-gray-200 grid grid-rows-[min-content_1fr_min-content] flex-col items-stretch gap-2 h-full">
+    <div className="p-3 bg-secondary grid grid-rows-[min-content_1fr_min-content] flex-col items-stretch gap-2 h-full">
       <div>
         <div className="text-center">
           <span className="text-lg font-semibold text-foreground">Comitia</span>
@@ -32,17 +32,16 @@ const MenuMd = () => {
         {data?.map(item => {
           const isSelected = item.id === currentPage;
           return (
-            <Link
+            <Button
               key={item.id}
-              to={validPath(paths.chat_with_id, { id: item.id })}
+              className="w-full"
+              variant={isSelected ? 'default' : 'outline'}
+              asChild
             >
-              <Button
-                className="w-full"
-                variant={isSelected ? 'default' : 'secondary'}
-              >
+              <Link to={validPath(paths.chat_with_id, { id: item.id })}>
                 {item.name}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           );
         })}
       </div>
@@ -66,7 +65,7 @@ const MenuSm = () => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent className="p-0 bg-gray-200" side={'left'}>
+      <SheetContent className="p-0 bg-secondary" side={'left'}>
         <MenuMd />
       </SheetContent>
     </Sheet>
@@ -99,7 +98,7 @@ const Chat = () => {
         </>
       )}
 
-      <div className="col-span-full md:col-start-2 p-3 h-full flex flex-col justify-between">
+      <div className="col-span-full md:col-start-2 p-3 lg:px-16 xl:px-60 2xl:px-96 h-full flex flex-col justify-between">
         {outlet || 'Please select a chat from the sidebar'}
       </div>
     </div>
