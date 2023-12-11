@@ -1,22 +1,34 @@
-import Replicate, { type Prediction } from 'replicate';
+import { ConversationChain } from 'langchain/chains';
+import { BufferMemory } from 'langchain/memory';
+import { ChatPromptTemplate, MessagesPlaceholder } from 'langchain/prompts';
+import { Replicate } from './replicate-wrapper';
 
 import { env } from '../../config/env';
 import { fetchRecords } from '../protocols';
 import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
 
 const replicate = new Replicate({
-  auth: env.REPLICATE_API_TOKEN
+  model: MODEL_ID,
+  apiKey: env.REPLICATE_API_TOKEN
 });
+
+const AI_CONVERSATION_PREFIX = 'AI: ';
 
 export class ChatSession {
   public did: string;
   public isReady: boolean = false;
 
+  private memory: BufferMemory;
   private context: string = '';
   private userInfo: Record<string, unknown> = {};
 
   constructor(did: string) {
     this.did = did;
+    this.memory = new BufferMemory({
+      returnMessages: true,
+      memoryKey: 'chat_memory',
+      aiPrefix: AI_CONVERSATION_PREFIX
+    });
   }
 
   async initialize() {
@@ -26,28 +38,22 @@ export class ChatSession {
     this.isReady = true;
   }
 
-  async ask(question: string, onNewResponse: (response: Prediction) => void) {
-    const response = await replicate.run(
-      MODEL_ID,
-      {
-        input: {
-          prompt: question,
-          systemPrompt: this.buildSystemPrompt()
-        }
-      },
-      (res) => {
-        if (['processing', 'succeeded'].includes(res.status)) {
-          onNewResponse(res.output.join(''));
-        }
-      }
-    );
+  async ask(question: string) {
+    const prompt = await this.buildSystemPrompt();
+    const chain = new ConversationChain({
+      memory: this.memory,
+      prompt,
+      llm: replicate,
+      verbose: true
+    });
 
-    if ((response as Prediction).status === 'failed') {
-      console.error('Failed to get response from model', response);
-      throw new Error('Failed to get response from model');
-    }
+    const { response } = await chain.call({
+      input: question
+    });
 
-    return response;
+    const trimmedResponse = String(response).trim().replace(AI_CONVERSATION_PREFIX, '');
+
+    return trimmedResponse;
   }
 
   private async fetchUserInfo() {
@@ -65,9 +71,15 @@ export class ChatSession {
     this.context = (await Promise.all(context.map((record) => record.data.text()))).join('\n');
   }
 
-  private buildSystemPrompt() {
+  private async buildSystemPrompt() {
     // Builds system prompt from context and user info
     // TODO: Enrich this with context and user info
-    return BASE_PROMPT;
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', BASE_PROMPT],
+      new MessagesPlaceholder('chat_memory'),
+      ['human', '{input}']
+    ]);
+
+    return prompt;
   }
 }

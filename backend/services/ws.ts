@@ -12,10 +12,15 @@ export async function initializeWS(io: Server) {
       return next(new Error('No DID provided'));
     }
 
-    const isValidDID = await validateDIDHasProtocol(did);
+    try {
+      const isValidDID = await validateDIDHasProtocol(did);
 
-    if (!isValidDID) {
-      return next(new Error('DID does not have required protocol. Install it from /protocols.'));
+      if (!isValidDID) {
+        return next(new Error('DID does not have required protocol. Install it from /protocols.'));
+      }
+    } catch (error) {
+      console.error('Failed to validate DID', error);
+      return next(new Error('Failed to validate DID'));
     }
 
     // Add user to room
