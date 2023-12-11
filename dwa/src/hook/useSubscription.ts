@@ -14,6 +14,8 @@ const socket = io(socketUrl, {
 
 const useSubscription = () => {
   useEffect(() => {
+    socket.connect();
+
     return () => {
       socket.disconnect();
     };
