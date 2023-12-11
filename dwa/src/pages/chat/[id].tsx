@@ -44,7 +44,7 @@ const PulsingDots = ({ count = 3 }) => {
 };
 
 const Chat = () => {
-  const { chats, loading, send, isThinking } = useGetChat();
+  const { chats, loading, send, isThinking, block } = useGetChat();
   const [message, setMessage] = useState('what is 2 + 2');
 
   const sendHandler = async () => {
@@ -79,6 +79,7 @@ const Chat = () => {
           className="rounded-none rounded-l-lg"
           value={message}
           onChange={updateText}
+          disabled={block}
         />
 
         <Button

@@ -7,9 +7,11 @@ const useGetChat = () => {
   const [isThinking, setIsThinking] = useState(false);
   const [loading, setLoading] = useState(true);
   const [chats, setChats] = useState<Chat[]>([]);
+  const [block, setBlock] = useState(false);
 
   const send = (message: string) => {
     setLoading(true);
+    setBlock(true);
     socket.emit('message', message);
 
     const newMessage: Chat = { message, isMe: true };
@@ -22,8 +24,6 @@ const useGetChat = () => {
 
   useEffect(() => {
     socket.on('response', function (response: string) {
-      console.log('chat response:', response);
-
       if (response.length <= 0) return;
 
       const newMessage: Chat = { message: response, isMe: false };
@@ -36,6 +36,11 @@ const useGetChat = () => {
       console.log('chat ready:', response);
       setLoading(false);
     });
+    socket.on('response complete', function () {
+      setLoading(false);
+      setIsThinking(false);
+      setBlock(false);
+    });
 
     return () => {
       socket.off('response');
@@ -43,7 +48,7 @@ const useGetChat = () => {
     };
   }, [socket]);
 
-  return { chats, loading, send, isThinking };
+  return { chats, loading, send, isThinking, block };
 };
 
 export default useGetChat;
