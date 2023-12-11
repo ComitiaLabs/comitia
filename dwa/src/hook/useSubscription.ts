@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { useCallback, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { env } from '../env';
 
@@ -12,6 +13,21 @@ const socket = io(env.VITE_WS_URL, {
 });
 
 const useSubscription = () => {
+  const { toast } = useToast();
+
+  const toastError = useCallback(
+    (err?: unknown) => {
+      console.error(err);
+
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'Please refresh the page or try again later',
+      });
+    },
+    [toast],
+  );
+
   useEffect(() => {
     socket.connect();
 
@@ -24,16 +40,16 @@ const useSubscription = () => {
       console.log('client connected');
     });
 
-    socket.on('connect_error', function (err) {
-      console.log('client connect_error: ', err);
+    socket.on('connect_error', function (err: Error) {
+      toastError(err);
     });
 
-    socket.on('connect_timeout', function (err) {
-      console.log('client connect_timeout: ', err);
+    socket.on('connect_timeout', function (err: Error) {
+      toastError(err);
     });
 
     socket.on('error', function (err: Error) {
-      console.error('server error: ', err);
+      toastError(err);
     });
 
     return () => {
@@ -42,7 +58,7 @@ const useSubscription = () => {
       socket.off('connect_timeout');
       socket.off('error');
     };
-  }, []);
+  }, [toastError]);
 
   return { socket };
 };
