@@ -11,7 +11,7 @@ export const env = createEnv({
   clientPrefix: 'VITE_',
 
   client: {
-    VITE_WS_URL: z.string().default('ws://localhost:3000'),
+    VITE_WS_URL: z.string().default('localhost:3000'),
   },
 
   /**
