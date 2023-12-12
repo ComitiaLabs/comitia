@@ -23,9 +23,11 @@ export function handleChat(io: Server) {
       }
 
       try {
-        const response = await session.ask(message);
+        const response = await session.ask(message, (response) => {
+          socket.emit('response', response);
+        });
 
-        socket.emit('response', response);
+        socket.emit('response complete', response);
       } catch (error) {
         console.error('An error occurred while processing your request', error);
         socket.emit('error', 'An error occurred while processing your request');
