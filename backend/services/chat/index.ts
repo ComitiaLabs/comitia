@@ -4,7 +4,7 @@ import { ChatPromptTemplate, MessagesPlaceholder } from 'langchain/prompts';
 import { Replicate } from './replicate-wrapper';
 
 import { env } from '../../config/env';
-import { fetchRecords } from '../protocols';
+import { fetchRecords, writeRecords } from '../protocols';
 import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
 
 const replicate = new Replicate({
@@ -33,9 +33,13 @@ export class ChatSession {
 
   async initialize() {
     // Fetch context and user records
-    await Promise.all([this.fetchUserInfo(), this.fetchContext()]);
+    await Promise.all([this.fetchUserInfo(), this.fetchChatRecords()]);
 
     this.isReady = true;
+  }
+
+  async cleanup() {
+    await Promise.all([this.flushChatRecords()]);
   }
 
   async ask(question: string) {
@@ -57,7 +61,7 @@ export class ChatSession {
   }
 
   private async fetchUserInfo() {
-    const userInfoRecords = (await fetchRecords(this.did, 'health_records')) ?? [];
+    const userInfoRecords = (await fetchRecords(this.did, 'healthrecords')) ?? [];
 
     // In practice there should only be one record
     const userInfo = userInfoRecords.at(-1);
@@ -65,15 +69,58 @@ export class ChatSession {
     this.userInfo = (await userInfo?.data.json()) ?? {};
   }
 
-  private async fetchContext() {
-    const context = (await fetchRecords(this.did, 'context')) ?? [];
+  private async fetchChatRecords() {
+    const records = (await fetchRecords(this.did, 'messagerecords')) ?? [];
+    const recordData = (await Promise.all(records.map((record) => record.data.json()))).flat() as {
+      type: 'human' | 'ai';
+      content: string;
+    }[];
 
-    this.context = (await Promise.all(context.map((record) => record.data.text()))).join('\n');
+    // For each human message, group it with the next AI message
+    // if there is one
+    const messages = recordData.reduce(
+      (acc, record, index) => {
+        if (record.type === 'human') {
+          acc.push({
+            human: record.content,
+            ai: recordData[index + 1]?.content ?? ''
+          });
+        }
+
+        return acc;
+      },
+      [] as {
+        human: string;
+        ai: string;
+      }[]
+    );
+
+    // Happens in serial but should be fine,
+    // this op is not expensive
+    for await (const message of messages) {
+      await this.memory.saveContext(
+        { input: message.human },
+        { [AI_CONVERSATION_PREFIX]: message.ai }
+      );
+    }
+  }
+
+  private async flushChatRecords() {
+    const messages = await this.memory.chatHistory.getMessages();
+    const serializableMessages = messages.map((message) => ({
+      type: message._getType().toString(),
+      content: message.content.toString().replace(AI_CONVERSATION_PREFIX, '')
+    }));
+
+    await writeRecords(this.did, {
+      schema: 'messagerecords',
+      data: serializableMessages
+    });
   }
 
   private async buildSystemPrompt() {
     // Builds system prompt from context and user info
-    // TODO: Enrich this with context and user info
+    // TODO: Enrich this with user info
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', BASE_PROMPT],
       new MessagesPlaceholder('chat_memory'),

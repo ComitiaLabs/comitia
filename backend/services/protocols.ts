@@ -9,12 +9,12 @@ export const protocolDefinition = {
   protocol: 'https://comitia-help.com/protocol',
   published: true,
   types: {
-    message_records: {
-      schema: 'https://comitia-help.com/protocol/chat_records',
+    messagerecords: {
+      schema: 'https://comitia-help.com/protocol/messagerecords',
       dataFormats: ['application/json']
     },
-    health_records: {
-      schema: 'https://comitia-help.com/protocol/health_records',
+    healthrecords: {
+      schema: 'https://comitia-help.com/protocol/healthrecords',
       dataFormats: ['application/json']
     },
     context: {
@@ -23,20 +23,20 @@ export const protocolDefinition = {
     }
   },
   structure: {
-    message_records: {
+    messagerecords: {
       $actions: [
-        { who: 'author', of: 'message_records', can: 'read' },
-        { who: 'author', of: 'message_records', can: 'write' },
-        { who: 'recipient', of: 'message_records', can: 'read' },
-        { who: 'recipient', of: 'message_records', can: 'write' }
+        { who: 'author', of: 'messagerecords', can: 'read' },
+        { who: 'author', of: 'messagerecords', can: 'write' },
+        { who: 'recipient', of: 'messagerecords', can: 'read' },
+        { who: 'recipient', of: 'messagerecords', can: 'write' }
       ]
     },
-    health_records: {
+    healthrecords: {
       $actions: [
-        { who: 'author', of: 'health_records', can: 'read' },
-        { who: 'author', of: 'health_records', can: 'write' },
-        { who: 'recipient', of: 'health_records', can: 'read' },
-        { who: 'recipient', of: 'health_records', can: 'write' }
+        { who: 'author', of: 'healthrecords', can: 'read' },
+        { who: 'author', of: 'healthrecords', can: 'write' },
+        { who: 'recipient', of: 'healthrecords', can: 'read' },
+        { who: 'recipient', of: 'healthrecords', can: 'write' }
       ]
     },
     context: {
@@ -50,8 +50,7 @@ export const protocolDefinition = {
   }
 } satisfies ProtocolDefinition;
 
-type ProtocolSchemas =
-  (typeof protocolDefinition.types)[keyof typeof protocolDefinition.types]['schema'];
+type ProtocolSchemas = 'healthrecords' | 'context' | 'messagerecords';
 
 export async function validateDIDHasProtocol(did: string) {
   const { web5 } = Web5Service;
@@ -80,7 +79,7 @@ export async function validateDIDHasProtocol(did: string) {
   }
 }
 
-export async function fetchRecords(did: string, schema?: ProtocolSchemas) {
+export async function fetchRecords(did: string, schema: ProtocolSchemas) {
   const { web5 } = Web5Service;
 
   if (!web5) {
@@ -91,11 +90,43 @@ export async function fetchRecords(did: string, schema?: ProtocolSchemas) {
     from: did,
     message: {
       filter: {
-        protocol: 'https://comitia-help.com/protocol',
-        ...(schema && { schema })
+        schema: 'https://comitia-help.com/protocol/' + schema
       }
     }
   });
 
   return response.records;
+}
+
+export async function writeRecords(
+  did: string,
+  { schema, data }: { schema: ProtocolSchemas; data: unknown }
+) {
+  const { web5 } = Web5Service;
+
+  if (!web5) {
+    throw new Error('Web5 service not initialized');
+  }
+
+  const { record, status } = await web5.dwn.records.write({
+    store: false,
+    data,
+    message: {
+      published: true,
+      dataFormat: 'application/json',
+      schema: 'https://comitia-help.com/protocol/' + schema
+    }
+  });
+
+  if (!record || status.code >= 400) {
+    throw new Error('Record not created: ' + status.detail);
+  }
+
+  const { status: sendStatus } = await record.send(did);
+
+  if (sendStatus.code >= 400) {
+    throw new Error('Record not written: ' + sendStatus.detail);
+  }
+
+  return status;
 }
