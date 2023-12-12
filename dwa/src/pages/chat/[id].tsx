@@ -9,20 +9,23 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 interface IBubble {
-  text: React.ReactNode;
+  text: string;
   isMe: boolean;
 }
 const Bubble = (props: IBubble) => {
+  const { text, isMe } = props;
+
   return (
     <>
-      <div className={cn('flex justify-end', !props.isMe && 'justify-start')}>
+      <div className={cn('flex justify-end', !isMe && 'justify-start')}>
         <div
           className={cn(
-            'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3',
-            !props.isMe && 'bg-secondary text-secondary-foreground',
+            'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
+            !isMe && 'bg-secondary text-secondary-foreground',
           )}
         >
-          {props.text}
+          {text.length <= 0 && <PulsingDots />}
+          {text}
         </div>
       </div>
     </>
@@ -45,14 +48,14 @@ const PulsingDots = ({ count = 3 }) => {
 
 const Chat = () => {
   const ref = useRef<HTMLTextAreaElement>(null);
-  const { chats, loading, send, isThinking, block } = useGetChat();
-  const [message, setMessage] = useState('');
+  const { chats, loading, send, isThinking } = useGetChat();
+  const [message, setMessage] = useState('what is the meaning of life?');
 
   useEffect(() => {
     if (ref.current) {
       ref.current.focus();
     }
-  }, [block]);
+  }, [loading]);
 
   const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
@@ -78,17 +81,10 @@ const Chat = () => {
       <ScrollArea>
         <div className="flex flex-col gap-2 pr-3">
           {chats.map((chat, ind) => {
-            return (
-              <Bubble
-                // TODO: add key
-                key={ind}
-                text={chat.message}
-                isMe={chat.isMe}
-              />
-            );
+            // TODO: add key
+            return <Bubble key={ind} text={chat.message} isMe={chat.isMe} />;
           })}
-          {isThinking && <Bubble text={<PulsingDots />} isMe={false} />}
-          {/* <ScrollDown parentRef={ref} /> */}
+          {isThinking && <PulsingDots />}
         </div>
       </ScrollArea>
 
@@ -100,7 +96,7 @@ const Chat = () => {
           value={message}
           onChange={updateText}
           onKeyDown={handleKeyDown}
-          disabled={block}
+          disabled={loading}
         />
 
         <Button
