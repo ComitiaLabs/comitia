@@ -1,57 +1,75 @@
-import Replicate, { type Prediction } from 'replicate';
+import { ConversationChain } from 'langchain/chains';
+import { BufferMemory, BufferWindowMemory } from 'langchain/memory';
+import { ChatPromptTemplate, MessagesPlaceholder } from 'langchain/prompts';
+import { Replicate } from './replicate-wrapper';
 
 import { env } from '../../config/env';
-import { fetchRecords } from '../protocols';
+import { fetchRecords, writeRecords } from '../protocols';
 import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
 
 const replicate = new Replicate({
-  auth: env.REPLICATE_API_TOKEN
+  model: MODEL_ID,
+  apiKey: env.REPLICATE_API_TOKEN
 });
+
+const AI_CONVERSATION_PREFIX = 'AI: ';
 
 export class ChatSession {
   public did: string;
   public isReady: boolean = false;
 
-  private context: string = '';
+  private memory: BufferMemory;
   private userInfo: Record<string, unknown> = {};
 
   constructor(did: string) {
     this.did = did;
+    this.memory = new BufferWindowMemory({
+      k: 10, // K is the number of messages to remember
+      returnMessages: true,
+      memoryKey: 'chat_memory',
+      aiPrefix: AI_CONVERSATION_PREFIX
+    });
   }
 
   async initialize() {
     // Fetch context and user records
-    await Promise.all([this.fetchUserInfo(), this.fetchContext()]);
+    await Promise.all([this.fetchUserInfo(), this.fetchChatRecords()]);
 
     this.isReady = true;
   }
 
-  async ask(question: string, onNewResponse: (response: Prediction) => void) {
-    const response = await replicate.run(
-      MODEL_ID,
-      {
-        input: {
-          prompt: question,
-          systemPrompt: this.buildSystemPrompt()
-        }
-      },
-      (res) => {
-        if (['succeeded'].includes(res.status)) {
-          onNewResponse(res.output.join(''));
-        }
-      }
-    );
+  async cleanup() {
+    await Promise.all([this.flushChatRecords()]);
+  }
 
-    if ((response as Prediction).status === 'failed') {
-      console.error('Failed to get response from model', response);
-      throw new Error('Failed to get response from model');
-    }
+  async ask(question: string, onNewToken?: (token: string) => void) {
+    const prompt = await this.buildSystemPrompt();
+    const chain = new ConversationChain({
+      memory: this.memory,
+      prompt,
+      llm: replicate,
+      verbose: true
+    });
 
-    return response;
+    const { response } = await chain.call({
+      input: question,
+      callbacks: [
+        {
+          handleLLMNewToken(token: string) {
+            const newToken = token.trim().replace(AI_CONVERSATION_PREFIX, '');
+            newToken && onNewToken?.(newToken);
+          }
+        }
+      ]
+    });
+
+    const trimmedResponse = String(response).trim().replace(AI_CONVERSATION_PREFIX, '');
+
+    return trimmedResponse;
   }
 
   private async fetchUserInfo() {
-    const userInfoRecords = (await fetchRecords(this.did, 'health_records')) ?? [];
+    const userInfoRecords = (await fetchRecords(this.did, 'healthrecords')) ?? [];
 
     // In practice there should only be one record
     const userInfo = userInfoRecords.at(-1);
@@ -59,15 +77,64 @@ export class ChatSession {
     this.userInfo = (await userInfo?.data.json()) ?? {};
   }
 
-  private async fetchContext() {
-    const context = (await fetchRecords(this.did, 'context')) ?? [];
+  private async fetchChatRecords() {
+    const records = (await fetchRecords(this.did, 'messagerecords')) ?? [];
+    const recordData = (await Promise.all(records.map((record) => record.data.json()))).flat() as {
+      type: 'human' | 'ai';
+      content: string;
+    }[];
 
-    this.context = (await Promise.all(context.map((record) => record.data.text()))).join('\n');
+    // For each human message, group it with the next AI message
+    // if there is one
+    const messages = recordData.reduce(
+      (acc, record, index) => {
+        if (record.type === 'human') {
+          acc.push({
+            human: record.content,
+            ai: recordData[index + 1]?.content ?? ''
+          });
+        }
+
+        return acc;
+      },
+      [] as {
+        human: string;
+        ai: string;
+      }[]
+    );
+
+    // Happens in serial but should be fine,
+    // this op is not expensive
+    for await (const message of messages) {
+      await this.memory.saveContext(
+        { input: message.human },
+        { [AI_CONVERSATION_PREFIX]: message.ai }
+      );
+    }
   }
 
-  private buildSystemPrompt() {
+  private async flushChatRecords() {
+    const messages = await this.memory.chatHistory.getMessages();
+    const serializableMessages = messages.map((message) => ({
+      type: message._getType().toString(),
+      content: message.content.toString().replace(AI_CONVERSATION_PREFIX, '')
+    }));
+
+    await writeRecords(this.did, {
+      schema: 'messagerecords',
+      data: serializableMessages
+    });
+  }
+
+  private async buildSystemPrompt() {
     // Builds system prompt from context and user info
-    // TODO: Enrich this with context and user info
-    return BASE_PROMPT;
+    // TODO: Enrich this with user info
+    const prompt = ChatPromptTemplate.fromMessages([
+      ['system', BASE_PROMPT],
+      new MessagesPlaceholder('chat_memory'),
+      ['human', '{input}']
+    ]);
+
+    return prompt;
   }
 }

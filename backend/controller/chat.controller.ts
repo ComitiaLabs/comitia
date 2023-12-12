@@ -23,19 +23,29 @@ export function handleChat(io: Server) {
       }
 
       try {
-        await session.ask(message, (response) => {
+        const response = await session.ask(message, (response) => {
           socket.emit('response', response);
         });
 
-        socket.emit('response complete');
+        socket.emit('response complete', response);
       } catch (error) {
+        console.error('An error occurred while processing your request', error);
         socket.emit('error', 'An error occurred while processing your request');
       }
     });
 
     // Handle chat teardown here
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       logger.info(`User ${didPrint(socket.data.did)} disconnected`);
+      try {
+        await session.cleanup();
+        logger.info(`Chat session for ${didPrint(socket.data.did)} cleaned up`);
+      } catch (error) {
+        logger.error(
+          `Failed to cleanup chat session for conversation ${didPrint(socket.data.did)}`,
+          error
+        );
+      }
     });
   });
 }
