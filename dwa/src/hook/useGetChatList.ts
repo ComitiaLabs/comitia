@@ -3,15 +3,16 @@ import { useState } from 'react';
 const useGetChatList = () => {
   const [loading] = useState(false);
 
-  const data = [
-    { id: '1', name: 'Chat 1' },
-    { id: '2', name: 'Chat 2' },
-    { id: '3', name: 'Chat 3' },
-  ];
+  const [data] = useState([{ id: '1', name: 'AI Chat' }]);
+
+  const isChatValid = (chatId: string | undefined) => {
+    return data.some(chat => chat.id === chatId);
+  };
 
   return {
     loading,
     data,
+    isChatValid,
   };
 };
 
