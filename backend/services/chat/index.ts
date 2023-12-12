@@ -1,5 +1,5 @@
 import { ConversationChain } from 'langchain/chains';
-import { BufferMemory } from 'langchain/memory';
+import { BufferMemory, BufferWindowMemory } from 'langchain/memory';
 import { ChatPromptTemplate, MessagesPlaceholder } from 'langchain/prompts';
 import { Replicate } from './replicate-wrapper';
 
@@ -19,12 +19,12 @@ export class ChatSession {
   public isReady: boolean = false;
 
   private memory: BufferMemory;
-  private context: string = '';
   private userInfo: Record<string, unknown> = {};
 
   constructor(did: string) {
     this.did = did;
-    this.memory = new BufferMemory({
+    this.memory = new BufferWindowMemory({
+      k: 10, // K is the number of messages to remember
       returnMessages: true,
       memoryKey: 'chat_memory',
       aiPrefix: AI_CONVERSATION_PREFIX
@@ -42,7 +42,7 @@ export class ChatSession {
     await Promise.all([this.flushChatRecords()]);
   }
 
-  async ask(question: string) {
+  async ask(question: string, onNewToken?: (token: string) => void) {
     const prompt = await this.buildSystemPrompt();
     const chain = new ConversationChain({
       memory: this.memory,
@@ -52,7 +52,15 @@ export class ChatSession {
     });
 
     const { response } = await chain.call({
-      input: question
+      input: question,
+      callbacks: [
+        {
+          handleLLMNewToken(token: string) {
+            const newToken = token.trim().replace(AI_CONVERSATION_PREFIX, '');
+            newToken && onNewToken?.(newToken);
+          }
+        }
+      ]
     });
 
     const trimmedResponse = String(response).trim().replace(AI_CONVERSATION_PREFIX, '');
