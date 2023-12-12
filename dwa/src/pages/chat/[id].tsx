@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
 import useGetChatList from '@/hook/useGetChatList';
@@ -48,8 +47,19 @@ const PulsingDots = ({ count = 3 }) => {
 
 const Chat = () => {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { chats, loading, send, isThinking } = useGetChat();
   const [message, setMessage] = useState('what is the meaning of life?');
+
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chats]);
 
   useEffect(() => {
     if (ref.current) {
@@ -78,7 +88,10 @@ const Chat = () => {
 
   return (
     <>
-      <ScrollArea>
+      <div
+        className="h-full overflow-scroll overflow-x-hidden"
+        ref={containerRef}
+      >
         <div className="flex flex-col gap-2 pr-3">
           {chats.map((chat, ind) => {
             // TODO: add key
@@ -86,7 +99,7 @@ const Chat = () => {
           })}
           {isThinking && <PulsingDots />}
         </div>
-      </ScrollArea>
+      </div>
 
       <form onSubmit={handleSubmit} className="flex items-center pt-2">
         <Textarea
