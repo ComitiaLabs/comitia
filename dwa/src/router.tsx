@@ -6,6 +6,7 @@ export const paths = {
   home: '/',
   chat: '/chat',
   chat_with_id: '/chat/:id',
+  login: '/login',
 } as const;
 
 export type AppPath = (typeof paths)[keyof typeof paths];
@@ -40,6 +41,14 @@ export const routes: RouteObject[] = [
             },
           },
         ],
+      },
+      {
+        path: paths.login,
+        lazy: async () => {
+          return {
+            Component: (await import('./pages/login/login.tsx')).default,
+          };
+        }
       },
     ],
   },
