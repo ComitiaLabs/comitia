@@ -1,46 +1,23 @@
-import { useEffect, useReducer, useState } from 'react';
+import { updateChatsAtom } from '@/store';
+import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 import useSubscription from './useSubscription';
 
-export type Chat = { message: string; isMe: boolean };
-
-type State = Chat[];
-type Action =
-  | { type: 'add'; payload: Chat[] }
-  | { type: 'update_last'; payload: Chat }
-  | { type: 'remove' };
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'add': {
-      return [...state, ...action.payload];
-    }
-    case 'update_last': {
-      const length = state.length;
-      if (length === 0) return state;
-      const last = state[length - 1];
-      return [...state.slice(0, length - 1), { ...last, ...action.payload }];
-    }
-    case 'remove': {
-      return state.slice(0, state.length - 1);
-    }
-    default:
-      return state;
-  }
-};
-
 const useGetChat = () => {
-  const [chats, dispatch] = useReducer(reducer, []);
+  const [chats, setChats] = useAtom(updateChatsAtom);
+  type Chat = (typeof chats)[number];
+
   const [isThinking, setIsThinking] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const send = (message: string) => {
     setLoading(true);
-    socket.emit('message', message);
 
     const newMessage: Chat = { message, isMe: true };
     const newResponse: Chat = { message: '', isMe: false };
+    setChats({ type: 'add', payload: [newMessage, newResponse] });
 
-    dispatch({ type: 'add', payload: [newMessage, newResponse] });
-
+    socket.emit('message', message);
     setIsThinking(true);
   };
 
@@ -48,11 +25,8 @@ const useGetChat = () => {
 
   const updateChat = (response: string) => {
     if (response.length <= 0) return;
-
-    dispatch({
-      type: 'update_last',
-      payload: { message: response, isMe: false },
-    });
+    const newResponse: Chat = { message: response, isMe: false };
+    setChats({ type: 'update_last', payload: newResponse });
   };
 
   useEffect(() => {
@@ -74,6 +48,7 @@ const useGetChat = () => {
       socket.off('ready');
       socket.off('response complete');
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
   return {

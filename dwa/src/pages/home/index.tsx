@@ -1,3 +1,4 @@
+import Login from '@/components/login';
 import Splash from '@/components/splashes';
 import {
   Accordion,
@@ -6,12 +7,20 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import useIsAuthorized from '@/hook/useIsAuthorized';
 import { faqs, features } from '@/lib/constants';
+import RequestStatus from '@/lib/enums';
 import { FolderLock } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
-  const loggedIn = true;
+  const loggedIn = useIsAuthorized();
+
+  const [query] = useSearchParams();
+  const [showLoginModal, setShowLoginModal] = useState(
+    query.get('login') != null ? true : false,
+  );
 
   return (
     <>
@@ -26,18 +35,14 @@ const Home = () => {
                 <h2 className="text-2xl font-bold">Comitia</h2>
               </div>
               <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                {loggedIn ? (
+                {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild variant="link">
                     <Link to="/chat">
                       Get started <span aria-hidden="true">&rarr;</span>
                     </Link>
                   </Button>
                 ) : (
-                  <Button asChild variant="link">
-                    <Link to="/login">
-                      Login <span aria-hidden="true">&rarr;</span>
-                    </Link>
-                  </Button>
+                  <Login variant="link" />
                 )}
               </div>
             </nav>
@@ -50,16 +55,20 @@ const Home = () => {
               </h2>
             </div>
             <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
                 Revolutionalising mental health with web5 and AI
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600">
+              <p className="mt-6 text-lg leading-8 text-secondary-foreground">
                 A Web5 Hackathon project
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Button asChild>
-                  <Link to="/chat">Get started</Link>
-                </Button>
+                {loggedIn === RequestStatus.TRUE ? (
+                  <Button asChild>
+                    <Link to="/chat">Get started</Link>
+                  </Button>
+                ) : (
+                  <Login open={showLoginModal} setOpen={setShowLoginModal} />
+                )}
               </div>
             </div>
           </div>
