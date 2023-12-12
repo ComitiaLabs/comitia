@@ -7,13 +7,15 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import useIsAuthorized from '@/hook/useIsAuthorized';
 import { faqs, features } from '@/lib/constants';
+import RequestStatus from '@/lib/enums';
 import { FolderLock } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
-  const loggedIn = false;
+  const loggedIn = useIsAuthorized();
 
   const [query] = useSearchParams();
   const [showLoginModal, setShowLoginModal] = useState(
@@ -33,7 +35,7 @@ const Home = () => {
                 <h2 className="text-2xl font-bold">Comitia</h2>
               </div>
               <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                {loggedIn ? (
+                {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild variant="link">
                     <Link to="/chat">
                       Get started <span aria-hidden="true">&rarr;</span>
@@ -60,11 +62,9 @@ const Home = () => {
                 A Web5 Hackathon project
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                {loggedIn ? (
+                {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild>
-                    <Link to="/chat">
-                      Get started <span aria-hidden="true">&rarr;</span>
-                    </Link>
+                    <Link to="/chat">Get started</Link>
                   </Button>
                 ) : (
                   <Login open={showLoginModal} setOpen={setShowLoginModal} />

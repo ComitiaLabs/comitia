@@ -6,6 +6,28 @@ const DID_STORAGE_KEY = 'did';
 export const didAtom = atomWithStorage<string | undefined>(
   DID_STORAGE_KEY,
   undefined,
+  {
+    getItem: async (key, initialValue) => {
+      if (typeof window === 'undefined') return undefined;
+
+      const value = localStorage.getItem(key);
+      if (!value) return '';
+      return value ? value : initialValue;
+    },
+    setItem: async (key, newValue) => {
+      if (typeof window === 'undefined') return undefined;
+      if (newValue === undefined) return undefined;
+
+      localStorage.setItem(key, newValue);
+      return undefined;
+    },
+    removeItem: async key => {
+      if (typeof window === 'undefined') return undefined;
+
+      localStorage.removeItem(key);
+      return undefined;
+    },
+  },
 );
 
 export const protocolAtom = atom<ProtocolDefinition | undefined>(undefined);
