@@ -2,7 +2,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import { BookUser, CircleUserRound, DownloadCloud } from 'lucide-react';
+import { BookUser, CircleUserRound, DownloadCloud, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -29,9 +29,14 @@ const ProfileMenu = () => {
             Profile
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem disabled>
           <div className="w-full flex items-center gap-2">
             <DownloadCloud className="w-4 h-4" /> Download Records
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem disabled>
+          <div className="w-full flex items-center gap-2">
+            <LogOut className="w-4 h-4" /> Logout
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>
