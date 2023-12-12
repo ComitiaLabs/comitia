@@ -1,10 +1,11 @@
+import ProfileMenu from '@/components/profileMenu';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import useGetChatList from '@/hook/useGetChatList';
 import { validPath } from '@/lib/routing';
 import { paths } from '@/router';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { CircleUserRound, Menu, PenSquare } from 'lucide-react';
+import { Menu, PenSquare } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useOutlet, useParams } from 'react-router-dom';
 
@@ -46,10 +47,7 @@ const MenuMd = () => {
         })}
       </div>
 
-      <Button className="w-full flex justify-between" disabled variant="ghost">
-        <CircleUserRound className="w-4 h-4" />
-        Your Profile
-      </Button>
+      <ProfileMenu />
     </div>
   );
 };
