@@ -19,30 +19,42 @@ export const validateDIDHasProtocol = async (
 export const installProtocols = async (
   web5: Web5,
   protocolDefinition: ProtocolDefinition,
+  did: string,
 ) => {
   const hasProtocol = await validateDIDHasProtocol(web5, protocolDefinition);
 
   if (hasProtocol) return;
 
-  return await web5.dwn.protocols.configure({
+  const instance = await web5.dwn.protocols.configure({
     message: {
       definition: protocolDefinition,
     },
   });
+
+  if (!instance.protocol) {
+    throw new Error('Protocol instance not created');
+  }
+
+  await instance.protocol.send(did);
 };
 
-export const getWeb5Instance = async (did?: string) => {
-  const { web5 } = await Web5.connect({ connectedDid: did });
+export const getWeb5Instance = async () => {
+  const { web5, did } = await Web5.connect({});
   if (!web5) {
     throw new Error('Failed to get web5 instance');
   }
-  return web5;
+  return { web5, did };
+};
+
+export const handleClose = async () => {
+  localStorage.clear();
 };
 
 export const handleAuth = async (
   protocol: ProtocolDefinition,
-  did?: string,
+  setDid: (did: string) => void,
 ) => {
-  const web5 = await getWeb5Instance(did);
-  await installProtocols(web5, protocol);
+  const { web5, did } = await getWeb5Instance();
+  setDid(did);
+  await installProtocols(web5, protocol, did);
 };
