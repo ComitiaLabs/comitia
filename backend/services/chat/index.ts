@@ -13,7 +13,7 @@ export class ChatSession {
   public isReady: boolean = false;
 
   private context: string = '';
-  private userInfo: Record<string, unknown> = {};
+  private userInfo: PatientSchema = {};
 
   constructor(did: string) {
     this.did = did;
@@ -68,6 +68,6 @@ export class ChatSession {
   private buildSystemPrompt() {
     // Builds system prompt from context and user info
     // TODO: Enrich this with context and user info
-    return BASE_PROMPT;
+    return BASE_PROMPT + "\n" + "Gender: " + this.userInfo.patient?.gender + "\n" + "Name: "+ this.userInfo.patient?.name + "\n" + "Language: "+ this.userInfo.patient?.language + "\n" + "BirthDate: "+ this.userInfo.patient?.birthDate;
   }
 }
