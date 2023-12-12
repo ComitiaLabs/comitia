@@ -12,15 +12,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { fetchProtocol } from '@/lib/axios.ts';
 import { handleAuth } from '@/lib/web5Tools';
+import { paths } from '@/router';
 import { didAtom, protocolAtom } from '@/store/index.ts';
 import { type VariantProps } from 'class-variance-authority';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { Wallet } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginCard = () => {
-  const [did, setDID] = useAtom(didAtom);
+  const [did, setDID] = useState<string | undefined>(undefined);
+  const setRealDID = useSetAtom(didAtom);
   const [protocol, setProtocol] = useAtom(protocolAtom);
+  const [invalidDID, setInvalidDID] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProtocol(setProtocol);
@@ -40,8 +45,11 @@ const LoginCard = () => {
       }
 
       await handleAuth(protocol, did);
+      setRealDID(did);
+      navigate(paths.chat);
     } catch (error) {
       console.error('Could not get web5 instance', error);
+      setInvalidDID('An error occurred. Please try again later');
     }
   };
 
@@ -64,6 +72,9 @@ const LoginCard = () => {
               onChange={handleDIDChange}
               required
             />
+            {invalidDID && (
+              <span className="text-sm text-red-500">{invalidDID}</span>
+            )}
           </div>
 
           <div className="relative">
