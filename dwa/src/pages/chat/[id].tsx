@@ -5,7 +5,7 @@ import useGetChat from '@/hook/useGetChat';
 import useGetChatList from '@/hook/useGetChatList';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 interface IBubble {
@@ -44,11 +44,29 @@ const PulsingDots = ({ count = 3 }) => {
 };
 
 const Chat = () => {
+  const ref = useRef<HTMLTextAreaElement>(null);
   const { chats, loading, send, isThinking, block } = useGetChat();
-  const [message, setMessage] = useState('what is 2 + 2');
+  const [message, setMessage] = useState('');
 
-  const sendHandler = async () => {
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.focus();
+    }
+  }, [block]);
+
+  const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    if (!message || message.length < 1) return;
+
     send(message);
+    setMessage('');
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event?.preventDefault();
+      handleSubmit();
+    }
   };
 
   const updateText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,11 +92,14 @@ const Chat = () => {
         </div>
       </ScrollArea>
 
-      <div className="flex items-center pt-2">
+      <form onSubmit={handleSubmit} className="flex items-center pt-2">
         <Textarea
+          autoFocus
+          ref={ref}
           className="rounded-none rounded-l-lg"
           value={message}
           onChange={updateText}
+          onKeyDown={handleKeyDown}
           disabled={block}
         />
 
@@ -87,7 +108,7 @@ const Chat = () => {
           size="icon"
           className="h-full rounded-none rounded-r-lg"
           disabled={loading || !message || message.length < 1}
-          onClick={sendHandler}
+          type="submit"
         >
           {!loading ? (
             <ChevronUpCircleIcon className="h-4 w-4" />
@@ -95,7 +116,7 @@ const Chat = () => {
             <Loader2Icon className="animate-spin" />
           )}
         </Button>
-      </div>
+      </form>
     </>
   );
 };
