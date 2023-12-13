@@ -1,13 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
-import useGetChatList from '@/hook/useGetChatList';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
-import { useParams } from 'react-router-dom';
 import rehypeHighlight from 'rehype-highlight';
+import Placeholder from './placeholder';
 
 interface IBubble {
   text: string;
@@ -49,7 +48,7 @@ const Chat = () => {
   const ref = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { chats, loading, send } = useGetChat();
-  const [message, setMessage] = useState('what is the meaning of life?');
+  const [message, setMessage] = useState('');
 
   const scrollToBottom = () => {
     if (containerRef.current) {
@@ -89,12 +88,16 @@ const Chat = () => {
   return (
     <>
       <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
-        <div className="flex flex-col gap-2 pr-3">
-          {chats.map((chat, ind) => {
-            // TODO: add key
-            return <Bubble key={ind} text={chat.message} isMe={chat.isMe} />;
-          })}
-        </div>
+        {chats.length <= 0 ? (
+          <Placeholder />
+        ) : (
+          <div className="flex flex-col gap-2 pr-3">
+            {chats.map((chat, ind) => {
+              // TODO: add key
+              return <Bubble key={ind} text={chat.message} isMe={chat.isMe} />;
+            })}
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="flex items-center pt-2">
@@ -102,6 +105,7 @@ const Chat = () => {
           autoFocus
           ref={ref}
           className="rounded-none rounded-l-lg"
+          placeholder="what is the meaning of life?"
           value={message}
           onChange={updateText}
           onKeyDown={handleKeyDown}
@@ -126,20 +130,4 @@ const Chat = () => {
   );
 };
 
-const Wrapper = () => {
-  const { id } = useParams();
-  const { isChatValid } = useGetChatList();
-  const validity = useMemo(() => isChatValid(id), [id, isChatValid]);
-
-  if (!validity) {
-    return <span>Please select a chat from the sidebar</span>;
-  }
-
-  return (
-    <>
-      <Chat />
-    </>
-  );
-};
-
-export default Wrapper;
+export default Chat;
