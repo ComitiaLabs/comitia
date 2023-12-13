@@ -25,26 +25,24 @@ export const protocolDefinition = {
   structure: {
     messagerecords: {
       $actions: [
+        { who: 'anyone', can: 'write' },
         { who: 'author', of: 'messagerecords', can: 'read' },
-        { who: 'author', of: 'messagerecords', can: 'write' },
-        { who: 'recipient', of: 'messagerecords', can: 'read' },
-        { who: 'recipient', of: 'messagerecords', can: 'write' }
+        { who: 'recipient', of: 'messagerecords', can: 'read' }
       ]
     },
     healthrecords: {
       $actions: [
+        { who: 'anyone', can: 'write' },
         { who: 'author', of: 'healthrecords', can: 'read' },
-        { who: 'author', of: 'healthrecords', can: 'write' },
-        { who: 'recipient', of: 'healthrecords', can: 'read' },
-        { who: 'recipient', of: 'healthrecords', can: 'write' }
+        { who: 'recipient', of: 'healthrecords', can: 'read' }
       ]
     },
     context: {
       $actions: [
         { who: 'author', of: 'context', can: 'read' },
-        { who: 'author', of: 'context', can: 'write' },
-        { who: 'recipient', of: 'context', can: 'read' },
-        { who: 'recipient', of: 'context', can: 'write' }
+        { who: 'anyone', can: 'write' },
+        { who: 'author', of: 'context', can: 'read' },
+        { who: 'recipient', of: 'context', can: 'read' }
       ]
     }
   }
@@ -112,9 +110,10 @@ export async function writeRecords(
     store: false,
     data,
     message: {
-      published: true,
       dataFormat: 'application/json',
-      schema: 'https://comitia-help.com/protocol/' + schema
+      protocol: protocolDefinition.protocol,
+      schema: `${protocolDefinition.protocol}/${schema}`,
+      protocolPath: schema
     }
   });
 
