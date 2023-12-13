@@ -1,15 +1,12 @@
 import useLogout from '@/hook/useLogout';
-import {
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-import { BookUser, CircleUserRound, DownloadCloud, LogOut } from 'lucide-react';
+import { DropdownMenuSeparator, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { BookUser, CircleUserRound, LogOut, Menu } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
+  DropdownMenuLabel
 } from '../ui/dropdown-menu';
 
 const ProfileMenu = () => {
@@ -18,9 +15,13 @@ const ProfileMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="w-full flex justify-between" variant="ghost">
-          <CircleUserRound className="w-4 h-4" />
-          Your Profile
+        <Button className="w-full flex items-center justify-between" variant="ghost">
+          <div className="flex gap-2 items-center">
+            <CircleUserRound className="w-4 h-4" />
+            John Doe
+          </div>
+
+          <Menu />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -30,11 +31,6 @@ const ProfileMenu = () => {
           <div className="w-full flex items-center gap-2">
             <BookUser className="w-4 h-4" />
             Profile
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <div className="w-full flex items-center gap-2">
-            <DownloadCloud className="w-4 h-4" /> Download Records
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={logout}>
