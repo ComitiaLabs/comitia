@@ -12,7 +12,24 @@ export default defineConfig({
   define: {
     global: 'globalThis'
   },
-  plugins: [react(), VitePWA(), nodePolyfills()],
+  plugins: [react(), VitePWA(
+      {
+        registerType: 'autoUpdate',
+        manifest: {
+          icons: [
+            {
+              src: "/comitia-logo.jpg",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "any maskable"
+            }
+          ]
+        },
+        devOptions: {
+          enabled: true
+        }
+      }
+  ), nodePolyfills()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -5,7 +5,9 @@ import useGetChatList from '@/hook/useGetChatList';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Markdown from 'react-markdown';
 import { useParams } from 'react-router-dom';
+import rehypeHighlight from 'rehype-highlight';
 
 interface IBubble {
   text: string;
@@ -15,25 +17,23 @@ const Bubble = (props: IBubble) => {
   const { text, isMe } = props;
 
   return (
-    <>
-      <div className={cn('flex justify-end', !isMe && 'justify-start')}>
-        <div
-          className={cn(
-            'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
-            !isMe && 'bg-secondary text-secondary-foreground',
-          )}
-        >
-          {text.length <= 0 && <PulsingDots />}
-          {text}
-        </div>
+    <div className={cn('flex justify-end', !isMe && 'justify-start')}>
+      <div
+        className={cn(
+          'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
+          !isMe && 'bg-secondary text-secondary-foreground'
+        )}
+      >
+        {text.length <= 0 && <PulsingDots />}
+        <Markdown remarkPlugins={[rehypeHighlight]}>{text}</Markdown>
       </div>
-    </>
+    </div>
   );
 };
 
 const PulsingDots = ({ count = 3 }) => {
   return (
-    <div className="flex gap-0 items-center justify-center">
+    <div className="flex items-center justify-center gap-0">
       {Array.from({ length: count }).map((_, ind) => (
         <Dot
           key={ind}
@@ -48,7 +48,7 @@ const PulsingDots = ({ count = 3 }) => {
 const Chat = () => {
   const ref = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { chats, loading, send, isThinking } = useGetChat();
+  const { chats, loading, send } = useGetChat();
   const [message, setMessage] = useState('what is the meaning of life?');
 
   const scrollToBottom = () => {
@@ -88,16 +88,12 @@ const Chat = () => {
 
   return (
     <>
-      <div
-        className="h-full overflow-scroll overflow-x-hidden"
-        ref={containerRef}
-      >
+      <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
         <div className="flex flex-col gap-2 pr-3">
           {chats.map((chat, ind) => {
             // TODO: add key
             return <Bubble key={ind} text={chat.message} isMe={chat.isMe} />;
           })}
-          {isThinking && <PulsingDots />}
         </div>
       </div>
 
@@ -120,7 +116,7 @@ const Chat = () => {
           type="submit"
         >
           {!loading ? (
-            <ChevronUpCircleIcon className="h-4 w-4" />
+            <ChevronUpCircleIcon className="w-4 h-4" />
           ) : (
             <Loader2Icon className="animate-spin" />
           )}

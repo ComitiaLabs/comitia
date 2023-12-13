@@ -1,14 +1,25 @@
-import { updateChatsAtom } from '@/store';
-import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
+import { getMessages } from '@/lib/web5Tools';
+import { Chat, protocolAtom, updateChatsAtom } from '@/store';
+import { useAtom, useAtomValue } from 'jotai';
+import { useEffect, useRef, useState } from 'react';
 import useSubscription from './useSubscription';
 
-const useGetChat = () => {
-  const [chats, setChats] = useAtom(updateChatsAtom);
-  type Chat = (typeof chats)[number];
+const handleChatParse = (messages: Awaited<ReturnType<typeof getMessages>>): Chat[] => {
+  return messages.map((message) => ({
+    message: message.content,
+    isMe: message.type === 'human'
+  }));
+};
 
+const useGetChat = () => {
+  const protocol = useAtomValue(protocolAtom);
+  const [chats, setChats] = useAtom(updateChatsAtom);
+
+  const [chatReady, setChatReady] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const firstEffect = useRef(true);
 
   const send = (message: string) => {
     setLoading(true);
@@ -32,7 +43,7 @@ const useGetChat = () => {
   useEffect(() => {
     socket.on('ready', function (response: string) {
       console.log('chat ready:', response);
-      setLoading(false);
+      setChatReady(true);
     });
 
     socket.on('response', updateChat);
@@ -51,11 +62,24 @@ const useGetChat = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
+  useEffect(() => {
+    if (chatReady && firstEffect.current) {
+      getMessages(protocol?.protocol).then(async (messages) => {
+        console.log('messages:', messages);
+
+        const parsedMessages = handleChatParse(messages);
+        setChats({ type: 'add', payload: parsedMessages });
+        setLoading(false);
+        firstEffect.current = false;
+      });
+    }
+  }, [chatReady, protocol, setChats]);
+
   return {
     chats,
     loading,
     isThinking,
-    send,
+    send
   };
 };
 

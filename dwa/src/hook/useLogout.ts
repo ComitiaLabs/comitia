@@ -1,5 +1,12 @@
+import { handleClose } from '@/lib/web5Tools';
+import { useNavigate } from 'react-router-dom';
+
 const useLogout = () => {
-  const logout = () => {};
+  const navigate = useNavigate();
+  const logout = () => {
+    handleClose();
+    navigate('/');
+  };
 
   return logout;
 };

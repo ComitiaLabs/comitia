@@ -21,6 +21,10 @@ export class ChatSession {
 
   private memory: BufferMemory;
   private userInfo: PatientSchema = {};
+  // TODO: Remove this once we're able to update records fetched from remote DWNs
+  // instead of just adding new ones
+  // Ref: https://github.com/TBD54566975/web5-js/blob/05ff2abd4fc23f411c2539b4fb635e5e6c37a8ab/packages/api/tests/record.spec.ts#L2045-L2046
+  private initialMessageCount: number = 0;
 
   constructor(did: string) {
     this.did = did;
@@ -84,6 +88,7 @@ export class ChatSession {
       type: 'human' | 'ai';
       content: string;
     }[];
+    this.initialMessageCount = recordData.length;
 
     // For each human message, group it with the next AI message
     // if there is one
@@ -116,10 +121,14 @@ export class ChatSession {
 
   private async flushChatRecords() {
     const messages = await this.memory.chatHistory.getMessages();
-    const serializableMessages = messages.map((message) => ({
+    const messagesToWrite = messages.slice(this.initialMessageCount);
+
+    const serializableMessages = messagesToWrite.map((message) => ({
       type: message._getType().toString(),
       content: message.content.toString().replace(AI_CONVERSATION_PREFIX, '')
     }));
+
+    if (messagesToWrite.length < 1) return;
 
     await writeRecords(this.did, {
       schema: 'messagerecords',
@@ -129,7 +138,7 @@ export class ChatSession {
 
   private generateUserInfoString(obj: UserInfoPromptSchema): string {
     let result = '';
-  
+
     if (obj.name !== undefined) {
       result += `name: ${obj.name}\n`;
     }
@@ -142,25 +151,26 @@ export class ChatSession {
     if (obj.gender !== undefined) {
       result += `gender: ${obj.gender}\n`;
     }
-  
+
     return result.trim();
   }
 
-
   private async buildSystemPrompt() {
-    let userInfoObj: UserInfoPromptSchema = {
-      name: this.userInfo.patient?.name?.join(' '),
-      birthdate: this.userInfo.patient?._birthDate,
-      language: this.userInfo.patient?.language,
-      gender: this.userInfo.patient?.gender
-    }
+    // TODO: Update this to use EntityMemory
+    // const userInfoObj: UserInfoPromptSchema = {
+    //   name: this.userInfo.patient?.name?.join(' '),
+    //   birthdate: this.userInfo.patient?._birthDate,
+    //   language: this.userInfo.patient?.language,
+    //   gender: this.userInfo.patient?.gender
+    // };
+
     const prompt = ChatPromptTemplate.fromMessages([
-      ['system', BASE_PROMPT +  this.generateUserInfoString(userInfoObj)],
+      ['system', BASE_PROMPT],
       new MessagesPlaceholder('chat_memory'),
       ['human', '{input}']
     ]);
 
-    console.log(prompt.promptMessages)
+    console.log(prompt.promptMessages);
     return prompt;
   }
 }
