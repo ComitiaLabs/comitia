@@ -1,3 +1,4 @@
+import useLogout from '@/hook/useLogout';
 import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -12,6 +13,8 @@ import {
 } from '../ui/dropdown-menu';
 
 const ProfileMenu = () => {
+  const logout = useLogout();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,7 +37,7 @@ const ProfileMenu = () => {
             <DownloadCloud className="w-4 h-4" /> Download Records
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>
+        <DropdownMenuItem onClick={logout}>
           <div className="w-full flex items-center gap-2">
             <LogOut className="w-4 h-4" /> Logout
           </div>
