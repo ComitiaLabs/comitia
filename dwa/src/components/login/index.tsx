@@ -7,14 +7,15 @@ import { paths } from '@/router';
 import { didAtom, protocolAtom } from '@/store/index.ts';
 import { type VariantProps } from 'class-variance-authority';
 import { useAtom, useSetAtom } from 'jotai';
-import { MonitorSmartphone, Wallet } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { Loader2, MonitorSmartphone, Wallet } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 
 const LoginCard = () => {
   const setRealDID = useSetAtom(didAtom);
   const [protocol, setProtocol] = useAtom(protocolAtom);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -37,6 +38,7 @@ const LoginCard = () => {
 
   const handleLocalLogin = async () => {
     try {
+      setLoading(true);
       if (!protocol) {
         toastError('Protocol is not defined. Please refresh the page');
         return;
@@ -46,6 +48,8 @@ const LoginCard = () => {
       navigate(paths.chat);
     } catch (error) {
       toastError('An error has occured. Please try again later');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +61,11 @@ const LoginCard = () => {
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-2 gap-6">
           <Button className="col-span-full" onClick={handleLocalLogin}>
-            <MonitorSmartphone className="mr-2 h-4 w-4 " />
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <MonitorSmartphone className="mr-2 h-4 w-4 " />
+            )}
             Local Agent
           </Button>
         </div>
