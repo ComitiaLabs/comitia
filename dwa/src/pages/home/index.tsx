@@ -13,6 +13,7 @@ import RequestStatus from '@/lib/enums';
 import { FolderLock } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import './index.css';
 
 const Home = () => {
   const loggedIn = useIsAuthorized();
@@ -221,7 +222,7 @@ const Home = () => {
       <div className="bg-secondary py-24 sm:py-32">
         <div className="mx-auto max-w-7xl gap-x-8 gap-y-20 px-6 lg:px-8 xl:grid-cols-3">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight py-3">
               Frequently Asked Questions
             </h2>
             <Accordion type="single" collapsible className="w-full">
