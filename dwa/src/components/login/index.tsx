@@ -2,19 +2,21 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { fetchProtocol } from '@/lib/axios.ts';
+import { validPath } from '@/lib/routing';
 import { handleAuth } from '@/lib/web5Tools';
 import { paths } from '@/router';
 import { didAtom, protocolAtom } from '@/store/index.ts';
 import { type VariantProps } from 'class-variance-authority';
 import { useAtom, useSetAtom } from 'jotai';
-import { MonitorSmartphone, Wallet } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { Loader2, MonitorSmartphone, Wallet } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 
 const LoginCard = () => {
   const setRealDID = useSetAtom(didAtom);
   const [protocol, setProtocol] = useAtom(protocolAtom);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -25,10 +27,10 @@ const LoginCard = () => {
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: 'Please refresh the page or try again later',
+        description: 'Please refresh the page or try again later'
       });
     },
-    [toast],
+    [toast]
   );
 
   useEffect(() => {
@@ -37,15 +39,18 @@ const LoginCard = () => {
 
   const handleLocalLogin = async () => {
     try {
+      setLoading(true);
       if (!protocol) {
         toastError('Protocol is not defined. Please refresh the page');
         return;
       }
 
       await handleAuth(protocol, setRealDID);
-      navigate(paths.chat);
+      navigate(validPath(paths.chat_with_id, { id: 'ai' }));
     } catch (error) {
       toastError('An error has occured. Please try again later');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +62,11 @@ const LoginCard = () => {
       <CardContent className="grid gap-4">
         <div className="grid grid-cols-2 gap-6">
           <Button className="col-span-full" onClick={handleLocalLogin}>
-            <MonitorSmartphone className="mr-2 h-4 w-4 " />
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <MonitorSmartphone className="mr-2 h-4 w-4 " />
+            )}
             Local Agent
           </Button>
         </div>
@@ -67,9 +76,7 @@ const LoginCard = () => {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
+            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
           </div>
         </div>
 
