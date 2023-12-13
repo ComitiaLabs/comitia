@@ -12,7 +12,6 @@ import { faqs, features } from '@/lib/constants';
 import RequestStatus from '@/lib/enums';
 import { validPath } from '@/lib/routing';
 import { paths } from '@/router';
-import { FolderLock } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 
@@ -25,17 +24,21 @@ const Home = () => {
   return (
     <>
       <div className="bg-secondary">
-        <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="relative px-6 isolate pt-14 lg:px-8">
           <header className="absolute inset-x-0 top-0 z-50">
             <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
-              <div className="flex lg:flex-1">
+              <div className="flex items-center lg:flex-1">
+                <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
                 <h2 className="text-2xl font-bold">Comitia</h2>
               </div>
               <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                 {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild variant="link">
                     <Link to={validPath(paths.chat_with_id, { id: 'ai' })}>
-                      Get started <span aria-hidden="true">&rarr;</span>
+                      Get started{' '}
+                      <span className="ml-1" aria-hidden="true">
+                        &rarr;
+                      </span>
                     </Link>
                   </Button>
                 ) : (
@@ -45,22 +48,22 @@ const Home = () => {
             </nav>
           </header>
           <Splash />
-          <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div className="max-w-2xl py-32 mx-auto sm:py-48 lg:py-56">
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-              <h2 className="relative rounded-full px-3 py-1 text-2xl leading-6 text-primary">
-                Comitia
+              <h2 className="relative px-3 py-1 text-2xl leading-6 rounded-full text-primary">
+                Comitia Helps
               </h2>
             </div>
             <div className="text-center">
               <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
-                Revolutionalising mental health with web5 and AI
+                Privacy focused Mental Health assistance
               </h1>
               <p className="mt-6 text-lg leading-8 text-secondary-foreground">
                 A Web5 Hackathon project
               </p>
-              <div className="mt-10 flex items-center justify-center gap-x-6">
+              <div className="flex items-center justify-center mt-10 gap-x-6">
                 {loggedIn === RequestStatus.TRUE ? (
-                  <Button asChild>
+                  <Button asChild size="lg">
                     <Link to={validPath(paths.chat_with_id, { id: 'ai' })}>Get started</Link>
                   </Button>
                 ) : (
@@ -73,24 +76,25 @@ const Home = () => {
         </div>
       </div>
 
-      <div className=" bg-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
+      <div className="py-24 bg-secondary sm:py-32">
+        <div className="px-6 mx-auto max-w-7xl lg:px-8">
+          <div className="max-w-2xl mx-auto lg:text-center">
             <h2 className="text-base font-semibold leading-7 text-indigo-600">Comitia Helps</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-secondary-foreground sm:text-4xl">
               Mental Health Prioritized
             </p>
             <p className="mt-6 text-lg leading-8 text-primary">
-              Comitia assists it's users with getting help with their mental health
+              Comitia provides a private space for users to receive mental health counseling from an
+              intelligent AI therapist.{' '}
             </p>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+          <div className="max-w-2xl mx-auto mt-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
               {features.map((feature) => (
                 <div key={feature.name} className="relative pl-16">
                   <dt className="text-base font-semibold leading-7 text-primary">
-                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                      <feature.icon className="h-6 w-6 text-secondary" aria-hidden="true" />
+                    <div className="absolute left-0 flex items-center justify-center w-10 h-10 bg-indigo-600 rounded-lg top-1">
+                      <feature.icon className="w-6 h-6 text-secondary" aria-hidden="true" />
                     </div>
                     {feature.name}
                   </dt>
@@ -102,108 +106,81 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="relative isolate bg-secondary px-6 py-24 sm:py-32 lg:px-0">
+      <div className="relative px-6 py-24 isolate bg-secondary sm:py-32 lg:px-0">
         <Splash />
-        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
-          <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-            <div className="lg:pr-4">
-              <div className="lg:max-w-lg">
-                <p className="text-base font-semibold leading-7 text-indigo-600">Deploy faster</p>
-                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                  A better workflow
-                </h1>
-                <p className="mt-6 text-xl leading-8 text-gray-700">
-                  Aliquet nec orci mattis amet quisque ullamcorper neque, nibh sem. At arcu, sit dui
-                  mi, nibh dui, diam eget aliquam. Quisque id at vitae feugiat egestas.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="-ml-12 -mt-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
+        <div className="grid max-w-2xl grid-cols-1 mx-auto gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
+          <div className="p-12 -mt-12 -ml-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
             <img
               className="w-[48rem] max-w-none rounded-xl bg-primary-foreground shadow-xl ring-1 ring-secondary/10 sm:w-[57rem]"
               src="/app-preview.png"
               alt="A preview of the application"
             />
           </div>
-          <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-            <div className="lg:pr-4">
-              <div className="max-w-xl text-base leading-7 text-primary lg:max-w-lg">
-                <p>
-                  Faucibus commodo massa rhoncus, volutpat. Dignissim sed eget risus enim. Mattis
-                  mauris semper sed amet vitae sed turpis id. Id dolor praesent donec est. Odio
-                  penatibus risus viverra tellus varius sit neque erat velit. Faucibus commodo massa
-                  rhoncus, volutpat. Dignissim sed eget risus enim. Mattis mauris semper sed amet
-                  vitae sed turpis id.
+
+          <div className="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
+            <div className="lg:max-w-lg lg:pr-4">
+              <p className="text-base font-semibold leading-7 text-indigo-600">
+                AI That Understands You
+              </p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Intelligent Conversations
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-gray-700">
+                Built on the open-source Meta Llama 2 model, Comitia has been augmented to hold
+                contextually relevant conversations with you on mental health issues.
+                <br />
+                <br />
+                Every interaction is an opportunity for it to learn, ensuring that your experience
+                is consistently improving and adapting to your mental health journey.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-16 lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
+            <div>
+              <div className="lg:pr-4 lg:max-w-lg">
+                <p className="text-base font-semibold leading-7 text-indigo-600">
+                  Your Data, Your Terms
                 </p>
-                <ul role="list" className="mt-8 space-y-8 text-primary">
-                  <li className="flex gap-x-3">
-                    <FolderLock
-                      className="mt-1 h-5 w-5 flex-none text-indigo-600"
-                      aria-hidden="true"
-                    />
-                    <span>
-                      <strong className="font-semibold text-secondary-foreground">
-                        Push to deploy.
-                      </strong>{' '}
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit
-                      perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    <FolderLock
-                      className="mt-1 h-5 w-5 flex-none text-indigo-600"
-                      aria-hidden="true"
-                    />
-                    <span>
-                      <strong className="font-semibold text-secondary-foreground">
-                        SSL certificates.
-                      </strong>{' '}
-                      Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem
-                      cupidatat commodo.
-                    </span>
-                  </li>
-                  <li className="flex gap-x-3">
-                    <FolderLock
-                      className="mt-1 h-5 w-5 flex-none text-indigo-600"
-                      aria-hidden="true"
-                    />
-                    <span>
-                      <strong className="font-semibold text-secondary-foreground">
-                        Database backups.
-                      </strong>{' '}
-                      Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit
-                      morbi lobortis.
-                    </span>
-                  </li>
-                </ul>
-                <p className="mt-8">
-                  Et vitae blandit facilisi magna lacus commodo. Vitae sapien duis odio id et. Id
-                  blandit molestie auctor fermentum dignissim. Lacus diam tincidunt ac cursus in
-                  vel. Mauris varius vulputate et ultrices hac adipiscing egestas. Iaculis convallis
-                  ac tempor et ut. Ac lorem vel integer orci.
-                </p>
-                <h2 className="mt-16 text-2xl font-bold tracking-tight text-secondary-foreground">
-                  No server? No problem.
-                </h2>
-                <p className="mt-6">
-                  Id orci tellus laoreet id ac. Dolor, aenean leo, ac etiam consequat in. Convallis
-                  arcu ipsum urna nibh. Pharetra, euismod vitae interdum mauris enim, consequat
-                  vulputate nibh. Maecenas pellentesque id sed tellus mauris, ultrices mauris.
-                  Tincidunt enim cursus ridiculus mi. Pellentesque nam sed nullam sed diam turpis
-                  ipsum eu a sed convallis diam.
+                <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                  No-compromise Data Privacy
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-gray-700">
+                  Powered by decentralized web technology, Comitia ensures that your data is always
+                  in your control. Your data is kept in your DWN and you only grant us access to it
+                  when accessing the application.
+                  <br />
+                  <br />
+                  You can export, modify or delete your data at any time.
                 </p>
               </div>
             </div>
+            <div className="" />
+            <div className="lg:pr-4 lg:max-w-lg">
+              <p className="text-base font-semibold leading-7 text-indigo-600">Lock-in who?</p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Interoperable
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-gray-700">
+                We keep your data in formats compliant with the FHIR health industry standard. This
+                allows your data to be useful even outside of Comitia.
+                <br />
+                <br />
+                Therapists, general practitioners and other applications will be able to review your
+                conversations and health data, understand your mental health journey, and pick up
+                where Comitia Helps left off.
+              </p>
+            </div>
           </div>
         </div>
+
         <Splash />
       </div>
 
-      <div className="bg-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl gap-x-8 gap-y-20 px-6 lg:px-8 xl:grid-cols-3">
+      <div className="py-24 bg-secondary sm:py-32">
+        <div className="px-6 mx-auto max-w-7xl gap-x-8 gap-y-20 lg:px-8 xl:grid-cols-3">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight py-3">Frequently Asked Questions</h2>
+            <h2 className="py-3 text-3xl font-bold tracking-tight">Frequently Asked Questions</h2>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq) => {
                 return (
