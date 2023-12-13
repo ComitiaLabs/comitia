@@ -5,8 +5,9 @@ import useGetChatList from '@/hook/useGetChatList';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import Markdown from 'react-markdown';
+import { useParams } from 'react-router-dom';
+import rehypeHighlight from 'rehype-highlight';
 
 interface IBubble {
   text: string;
@@ -16,14 +17,15 @@ const Bubble = (props: IBubble) => {
   const { text, isMe } = props;
 
   return (
-    <div className={cn('flex justify-end whitespace-pre-wrap', !isMe && 'justify-start')}>
+    <div className={cn('flex justify-end', !isMe && 'justify-start')}>
       <div
         className={cn(
-          'max-w-[90%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
+          'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
           !isMe && 'bg-secondary text-secondary-foreground'
         )}
       >
-        {text.length <= 0 ? <PulsingDots /> : <Markdown>{text}</Markdown>}
+        {text.length <= 0 && <PulsingDots />}
+        <Markdown remarkPlugins={[rehypeHighlight]}>{text}</Markdown>
       </div>
     </div>
   );
