@@ -6,6 +6,7 @@ import { Replicate } from './replicate-wrapper';
 import { env } from '../../config/env';
 import { fetchRecords, writeRecords } from '../protocols';
 import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
+import { PatientSchema, UserInfoPromptSchema } from './schema';
 
 const replicate = new Replicate({
   model: MODEL_ID,
@@ -19,7 +20,7 @@ export class ChatSession {
   public isReady: boolean = false;
 
   private memory: BufferMemory;
-  private userInfo: Record<string, unknown> = {};
+  private userInfo: PatientSchema = {};
 
   constructor(did: string) {
     this.did = did;
@@ -126,15 +127,40 @@ export class ChatSession {
     });
   }
 
+  private generateUserInfoString(obj: UserInfoPromptSchema): string {
+    let result = '';
+  
+    if (obj.name !== undefined) {
+      result += `name: ${obj.name}\n`;
+    }
+    if (obj.birthdate !== undefined) {
+      result += `age: ${obj.birthdate}\n`;
+    }
+    if (obj.language !== undefined) {
+      result += `language: ${obj.language}\n`;
+    }
+    if (obj.gender !== undefined) {
+      result += `gender: ${obj.gender}\n`;
+    }
+  
+    return result.trim();
+  }
+
+
   private async buildSystemPrompt() {
-    // Builds system prompt from context and user info
-    // TODO: Enrich this with user info
+    let userInfoObj: UserInfoPromptSchema = {
+      name: this.userInfo.patient?.name?.join(' '),
+      birthdate: this.userInfo.patient?._birthDate,
+      language: this.userInfo.patient?.language,
+      gender: this.userInfo.patient?.gender
+    }
     const prompt = ChatPromptTemplate.fromMessages([
-      ['system', BASE_PROMPT],
+      ['system', BASE_PROMPT +  this.generateUserInfoString(userInfoObj)],
       new MessagesPlaceholder('chat_memory'),
       ['human', '{input}']
     ]);
 
+    console.log(prompt.promptMessages)
     return prompt;
   }
 }
