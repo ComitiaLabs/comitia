@@ -58,3 +58,23 @@ export const handleAuth = async (
   setDid(did);
   await installProtocols(web5, protocol, did);
 };
+
+type Schema = 'messagerecords' | 'healthrecords';
+export const getRecords = async (schema: Schema, protocol?: string) => {
+  const { web5, did } = await getWeb5Instance();
+
+  const response = await web5.dwn.records.query({
+    from: did,
+    message: {
+      filter: {
+        schema: `${protocol}/${schema}`,
+      },
+    },
+  });
+
+  return response.records ?? [];
+};
+
+export const getMessages = async (protocol?: string) => {
+  return await getRecords('messagerecords', protocol);
+};

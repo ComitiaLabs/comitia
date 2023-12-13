@@ -1,9 +1,11 @@
-import { updateChatsAtom } from '@/store';
-import { useAtom } from 'jotai';
+import { getMessages } from '@/lib/web5Tools';
+import { protocolAtom, updateChatsAtom } from '@/store';
+import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import useSubscription from './useSubscription';
 
 const useGetChat = () => {
+  const protocol = useAtomValue(protocolAtom);
   const [chats, setChats] = useAtom(updateChatsAtom);
   type Chat = (typeof chats)[number];
 
@@ -33,6 +35,10 @@ const useGetChat = () => {
     socket.on('ready', function (response: string) {
       console.log('chat ready:', response);
       setLoading(false);
+
+      getMessages(protocol?.protocol).then(messages => {
+        console.log('messages:', messages);
+      });
     });
 
     socket.on('response', updateChat);

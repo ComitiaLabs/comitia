@@ -30,7 +30,11 @@ export const didAtom = atomWithStorage<string | undefined>(
   },
 );
 
-export const protocolAtom = atom<ProtocolDefinition | undefined>(undefined);
+const PROTOCOL_STORAGE_KEY = 'protocol';
+export const protocolAtom = atomWithStorage<ProtocolDefinition | undefined>(
+  PROTOCOL_STORAGE_KEY,
+  undefined,
+);
 
 export type Chat = { message: string; isMe: boolean };
 export const chatsAtom = atom<Chat[]>([]);
