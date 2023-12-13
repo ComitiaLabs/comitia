@@ -170,7 +170,6 @@ export class ChatSession {
       ['human', '{input}']
     ]);
 
-    console.log(prompt.promptMessages);
     return prompt;
   }
 }
