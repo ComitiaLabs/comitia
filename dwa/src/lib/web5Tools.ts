@@ -21,9 +21,9 @@ export const installProtocols = async (
   protocolDefinition: ProtocolDefinition,
   did: string,
 ) => {
-  const hasProtocol = await validateDIDHasProtocol(web5, protocolDefinition);
-
-  if (hasProtocol) return;
+  // TODO: Re-enable once protocol definition is stable
+  // const hasProtocol = await validateDIDHasProtocol(web5, protocolDefinition);
+  // if (hasProtocol) return;
 
   const instance = await web5.dwn.protocols.configure({
     message: {
