@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import useIsAuthorized from '@/hook/useIsAuthorized';
 import { faqs, features } from '@/lib/constants';
 import RequestStatus from '@/lib/enums';
+import { validPath } from '@/lib/routing';
+import { paths } from '@/router';
 import { FolderLock } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
@@ -32,7 +34,7 @@ const Home = () => {
               <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                 {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild variant="link">
-                    <Link to="/chat">
+                    <Link to={validPath(paths.chat_with_id, { id: 'ai' })}>
                       Get started <span aria-hidden="true">&rarr;</span>
                     </Link>
                   </Button>
@@ -59,7 +61,7 @@ const Home = () => {
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 {loggedIn === RequestStatus.TRUE ? (
                   <Button asChild>
-                    <Link to="/chat">Get started</Link>
+                    <Link to={validPath(paths.chat_with_id, { id: 'ai' })}>Get started</Link>
                   </Button>
                 ) : (
                   <Login open={showLoginModal} setOpen={setShowLoginModal} />

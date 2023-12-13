@@ -2,6 +2,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { fetchProtocol } from '@/lib/axios.ts';
+import { validPath } from '@/lib/routing';
 import { handleAuth } from '@/lib/web5Tools';
 import { paths } from '@/router';
 import { didAtom, protocolAtom } from '@/store/index.ts';
@@ -26,10 +27,10 @@ const LoginCard = () => {
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: 'Please refresh the page or try again later',
+        description: 'Please refresh the page or try again later'
       });
     },
-    [toast],
+    [toast]
   );
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const LoginCard = () => {
       }
 
       await handleAuth(protocol, setRealDID);
-      navigate(paths.chat);
+      navigate(validPath(paths.chat_with_id, { id: 'ai' }));
     } catch (error) {
       toastError('An error has occured. Please try again later');
     } finally {
@@ -75,9 +76,7 @@ const LoginCard = () => {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
+            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
           </div>
         </div>
 
