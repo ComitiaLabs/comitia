@@ -37,12 +37,18 @@ export const faqs = [
     answer: "No, only you can see your requests. We don't store any of your data."
   },
   {
-    question: 'Can I show my records to a human doctor?',
+    question: 'Can I continue my treatment outside the app?',
     answer:
       'Yes, you can export your records at any time. The export will be FHIR spec compliant so you can take it to any hospital you choose to.'
   },
   {
     question: 'Why do you not accept an email/password?',
-    answer: "We don't want to store any of your data to prevent any breach of your privacy."
+    answer:
+      'We are built on decentralized web technologies popularized by the Web5 project. Who needs passwords when you have a DWN?'
+  },
+  {
+    question: 'Will my information be shared with third parties?',
+    answer:
+      'No. We do not share your information with anyone. We do not operate a business model that requires us to do so and our code is open source so you can verify this yourself.'
   }
 ];
