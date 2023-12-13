@@ -6,6 +6,7 @@ import { Replicate } from './replicate-wrapper';
 import { env } from '../../config/env';
 import { fetchRecords, writeRecords } from '../protocols';
 import { MODEL_ID, BASE_PROMPT } from '../chat/constants';
+import { PatientSchema, UserInfoPromptSchema } from './schema';
 
 const replicate = new Replicate({
   model: MODEL_ID,
@@ -19,7 +20,7 @@ export class ChatSession {
   public isReady: boolean = false;
 
   private memory: BufferMemory;
-  private userInfo: Record<string, unknown> = {};
+  private userInfo: PatientSchema = {};
   // TODO: Remove this once we're able to update records fetched from remote DWNs
   // instead of just adding new ones
   // Ref: https://github.com/TBD54566975/web5-js/blob/05ff2abd4fc23f411c2539b4fb635e5e6c37a8ab/packages/api/tests/record.spec.ts#L2045-L2046
@@ -135,9 +136,34 @@ export class ChatSession {
     });
   }
 
+  private generateUserInfoString(obj: UserInfoPromptSchema): string {
+    let result = '';
+
+    if (obj.name !== undefined) {
+      result += `name: ${obj.name}\n`;
+    }
+    if (obj.birthdate !== undefined) {
+      result += `age: ${obj.birthdate}\n`;
+    }
+    if (obj.language !== undefined) {
+      result += `language: ${obj.language}\n`;
+    }
+    if (obj.gender !== undefined) {
+      result += `gender: ${obj.gender}\n`;
+    }
+
+    return result.trim();
+  }
+
   private async buildSystemPrompt() {
-    // Builds system prompt from context and user info
-    // TODO: Enrich this with user info
+    // TODO: Update this to use EntityMemory
+    // const userInfoObj: UserInfoPromptSchema = {
+    //   name: this.userInfo.patient?.name?.join(' '),
+    //   birthdate: this.userInfo.patient?._birthDate,
+    //   language: this.userInfo.patient?.language,
+    //   gender: this.userInfo.patient?.gender
+    // };
+
     const prompt = ChatPromptTemplate.fromMessages([
       ['system', BASE_PROMPT],
       new MessagesPlaceholder('chat_memory'),
