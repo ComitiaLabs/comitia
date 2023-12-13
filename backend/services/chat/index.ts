@@ -20,6 +20,10 @@ export class ChatSession {
 
   private memory: BufferMemory;
   private userInfo: Record<string, unknown> = {};
+  // TODO: Remove this once we're able to update records fetched from remote DWNs
+  // instead of just adding new ones
+  // Ref: https://github.com/TBD54566975/web5-js/blob/05ff2abd4fc23f411c2539b4fb635e5e6c37a8ab/packages/api/tests/record.spec.ts#L2045-L2046
+  private initialMessageCount: number = 0;
 
   constructor(did: string) {
     this.did = did;
@@ -83,6 +87,7 @@ export class ChatSession {
       type: 'human' | 'ai';
       content: string;
     }[];
+    this.initialMessageCount = recordData.length;
 
     // For each human message, group it with the next AI message
     // if there is one
@@ -115,10 +120,14 @@ export class ChatSession {
 
   private async flushChatRecords() {
     const messages = await this.memory.chatHistory.getMessages();
-    const serializableMessages = messages.map((message) => ({
+    const messagesToWrite = messages.slice(this.initialMessageCount);
+
+    const serializableMessages = messagesToWrite.map((message) => ({
       type: message._getType().toString(),
       content: message.content.toString().replace(AI_CONVERSATION_PREFIX, '')
     }));
+
+    if (messagesToWrite.length < 1) return;
 
     await writeRecords(this.did, {
       schema: 'messagerecords',
