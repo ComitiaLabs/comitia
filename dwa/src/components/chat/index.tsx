@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
+import Textarea from 'react-textarea-autosize';
 import rehypeHighlight from 'rehype-highlight';
 import Placeholder from './placeholder';
 
@@ -112,22 +112,26 @@ const Chat = () => {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center pt-2">
+      <form
+        onSubmit={handleSubmit}
+        className="flex items-center mt-2 focus-within:outline outline-2 rounded overflow-hidden"
+      >
         <Textarea
           autoFocus
           ref={ref}
-          className="rounded-none rounded-l-lg"
+          className="flex-grow  text-primary w-full p-3 resize-none outline-none"
           placeholder="what is the meaning of life?"
           value={message}
           onChange={updateText}
           onKeyDown={handleKeyDown}
           disabled={loading}
+          maxRows={4}
         />
 
         <Button
           variant="default"
           size="icon"
-          className="h-full rounded-none rounded-r-lg"
+          className="h-full rounded-none"
           disabled={loading || !message || message.length < 1}
           type="submit"
         >
