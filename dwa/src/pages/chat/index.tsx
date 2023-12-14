@@ -93,13 +93,13 @@ const Wrapper = () => {
         </div>
       ) : (
         <>
-          <div className="p-2 grid grid-cols-2">
+          <div className="p-2 grid grid-cols-3">
             <div>
               <MenuSm />
             </div>
 
-            <div className="text-center">
-              <span className="text-lg font-semibold text-foreground">Comitia</span>
+            <div className="flex flex-col items-center">
+              <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
             </div>
 
             <div />
