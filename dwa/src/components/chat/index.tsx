@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import useGetChat from '@/hook/useGetChat';
 import { cn } from '@/lib/utils';
 import { ChevronUpCircleIcon, Dot, Loader2Icon } from 'lucide-react';
@@ -9,6 +8,7 @@ import rehypeHighlight from 'rehype-highlight';
 import Placeholder from './placeholder';
 import { inputFieldAtom, inputFieldRefAtom } from '@/store';
 import { useAtom } from 'jotai';
+import { Textarea } from '../ui/textarea';
 
 interface IBubble {
   text: string;
@@ -121,6 +121,7 @@ const Chat = () => {
           onChange={updateText}
           onKeyDown={handleKeyDown}
           disabled={loading}
+          maxRows={4}
         />
 
         <Button

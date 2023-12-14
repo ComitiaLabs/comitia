@@ -1,12 +1,13 @@
 import Layout from '@/components/layout/index.tsx';
-import { Outlet, createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import ProtectedRoute from './hoc/protectedRoute.tsx';
+import Chat from './pages/chat/index.tsx';
+import Home from './pages/home/index.tsx';
 
 export const paths = {
   base: '/',
   home: '/',
-  chat: '/chat',
-  chat_with_id: '/chat/:id'
+  chat: '/chat'
 } as const;
 
 export type AppPath = (typeof paths)[keyof typeof paths];
@@ -18,29 +19,15 @@ export const routes: RouteObject[] = [
     children: [
       {
         path: paths.home,
-        lazy: async () => {
-          return {
-            Component: (await import('./pages/home/index.tsx')).default
-          };
-        }
+        element: <Home />
       },
       {
         path: paths.chat,
         element: (
           <ProtectedRoute>
-            <Outlet />
+            <Chat />
           </ProtectedRoute>
-        ),
-        children: [
-          {
-            path: '',
-            lazy: async () => {
-              return {
-                Component: (await import('./pages/chat/index.tsx')).default
-              };
-            }
-          }
-        ]
+        )
       }
     ]
   }
