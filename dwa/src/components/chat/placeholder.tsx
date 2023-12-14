@@ -25,9 +25,10 @@ const Placeholder = () => {
   const isMDDevice = useMediaQuery('only screen and (min-width: 769px)');
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div>
-        <div>Example</div>
+    <div className="flex flex-col items-center h-full justify-around">
+      <div className="flex items-center">
+        <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
+        <h2 className="text-2xl font-bold">Comitia</h2>
       </div>
 
       <div className="flex gap-5 justify-between w-full 2xl:w-3/4">
