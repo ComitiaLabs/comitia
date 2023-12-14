@@ -23,8 +23,8 @@ const Placeholder = () => {
   const [inputFieldRef] = useAtom(inputFieldRefAtom);
 
   return (
-    <div className="flex flex-col items-center h-full">
-      <div className="flex items-center mt-[40%] mb-[20%]">
+    <div className="flex flex-col items-center h-4/5 justify-around">
+      <div className="flex items-center">
         <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
         <h2 className="text-2xl font-bold">Comitia</h2>
       </div>
@@ -43,7 +43,7 @@ const Placeholder = () => {
                   {card.tags.map((tag) => (
                     <Button
                       variant="secondary"
-                      className="flex justify-between gap-4"
+                      className="flex justify-between items-center whitespace-normal"
                       key={tag}
                       onClick={() => {
                         setInputField(tag);
