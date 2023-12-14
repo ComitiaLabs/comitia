@@ -45,6 +45,7 @@ const PulsingDots = ({ count = 3 }) => {
 };
 
 const Chat = () => {
+  const firstEffect = useRef(true);
   const ref = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { chats, loading, send } = useGetChat();
@@ -55,6 +56,13 @@ const Chat = () => {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
     }
   };
+
+  useEffect(() => {
+    if (firstEffect.current) {
+      firstEffect.current = false;
+      return;
+    }
+  }, [loading]);
 
   useEffect(() => {
     scrollToBottom();
@@ -88,14 +96,14 @@ const Chat = () => {
   return (
     <>
       <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
-        {loading ? (
+        {loading && firstEffect.current ? (
           <div className="w-full h-full flex justify-center items-center">
             <Loader2Icon size={100} className="text-primary animate-[spin_3s_linear_infinite]" />
           </div>
         ) : chats.length <= 0 ? (
           <Placeholder />
         ) : (
-          <div className="flex flex-col gap-2 pr-3">
+          <div className="flex flex-col gap-2 ">
             {chats.map((chat, ind) => {
               // TODO: add key
               return <Bubble key={ind} text={chat.message} isMe={chat.isMe} />;
