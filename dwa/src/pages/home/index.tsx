@@ -21,7 +21,7 @@ const Home = () => {
   const [showLoginModal, setShowLoginModal] = useState(query.get('login') != null ? true : false);
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       <div className="bg-secondary">
         <div className="relative px-6 isolate pt-14 lg:px-8">
           <header className="absolute inset-x-0 top-0 z-50">
@@ -190,7 +190,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
