@@ -26,11 +26,16 @@ function App() {
         <meta property="og:description" content="Bot that acts as a therapist. Users get to own their data. All the chats had with this bot and the medical info shared in the conversation are theirs." />
         <meta property="og:site_name" content="Comitia Help" />
         <meta property="og:locale" content="en_GB" />
-        
         <meta name="twitter:card" content="summary_large_image" />
 
         {/* <!--  Non-Essential, But Recommended --> */}
         <meta name="twitter:image:alt" content="Comitia Chat" />
+
+        {/* <!--  Favicons --> */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
       </Helmet>
       <RouterProvider router={router} />
       <Toaster />
