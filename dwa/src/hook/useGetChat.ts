@@ -1,7 +1,7 @@
 import { getMessages } from '@/lib/web5Tools';
 import { Chat, protocolAtom, updateChatsAtom } from '@/store';
 import { useAtom, useAtomValue } from 'jotai';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSubscription from './useSubscription';
 
 const handleChatParse = (messages: Awaited<ReturnType<typeof getMessages>>): Chat[] => {
@@ -18,8 +18,7 @@ const useGetChat = () => {
   const [chatReady, setChatReady] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const firstEffect = useRef(true);
+  const [loadingMessages, setLoadingMessages] = useState(true);
 
   const send = (message: string) => {
     setLoading(true);
@@ -63,21 +62,25 @@ const useGetChat = () => {
   }, [socket]);
 
   useEffect(() => {
-    if (chatReady && firstEffect.current) {
-      getMessages(protocol?.protocol).then(async (messages) => {
-        console.log('messages:', messages);
+    if (chatReady) {
+      getMessages(protocol?.protocol)
+        .then(async (messages) => {
+          console.log('messages:', messages);
 
-        const parsedMessages = handleChatParse(messages);
-        setChats({ type: 'add', payload: parsedMessages });
-        setLoading(false);
-        firstEffect.current = false;
-      });
+          const parsedMessages = handleChatParse(messages);
+          setChats({ type: 'add', payload: parsedMessages });
+          setLoading(false);
+        })
+        .finally(() => {
+          setLoadingMessages(false);
+        });
     }
   }, [chatReady, protocol, setChats]);
 
   return {
     chats,
     loading,
+    loadingMessages,
     isThinking,
     send
   };

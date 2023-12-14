@@ -1,54 +1,58 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useMediaQuery } from '@uidotdev/usehooks';
-import { AlertCircle, Cpu, MessagesSquare } from 'lucide-react';
+import { MessagesSquare } from 'lucide-react';
+import { Button } from '../ui/button';
+
+import { inputFieldAtom, inputFieldRefAtom } from '@/store';
+import { useAtom } from 'jotai';
 
 const infoCards = [
   {
-    title: 'Example',
+    title: 'Examples',
     icon: MessagesSquare,
-    tags: ['How can i get better?']
-  },
-  {
-    title: 'Capabilites',
-    icon: Cpu,
-    tags: ['Provide information and answer questions']
-  },
-  {
-    title: 'Limitations',
-    icon: AlertCircle,
-    tags: ['Potential for biased or inappropiate responses']
+    tags: [
+      'What coping strategies do you suggest for anxiety?',
+      'Can you recommend techniques to improve my sleep?',
+      'What are some ways to build resilience?',
+      'How can I support a friend struggling with depression?'
+    ]
   }
 ];
 
 const Placeholder = () => {
-  const isSMDevice = useMediaQuery('only screen and (min-width: 640px)');
-  const isMDDevice = useMediaQuery('only screen and (min-width: 769px)');
+  const [, setInputField] = useAtom(inputFieldAtom);
+  const [inputFieldRef] = useAtom(inputFieldRefAtom);
 
   return (
-    <div className="flex flex-col items-center h-full justify-around">
-      <div className="flex items-center">
+    <div className="flex flex-col items-center h-full">
+      <div className="flex items-center mt-[40%] mb-[20%]">
         <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
         <h2 className="text-2xl font-bold">Comitia</h2>
       </div>
 
-      <div className="flex gap-5 justify-between w-full 2xl:w-3/4">
-        {infoCards.map((card, ind) => {
-          if (ind === 0 && !isSMDevice) return null;
-          if (ind === 1 && !isMDDevice) return null;
-
+      <div className="flex justify-between max-w-xl gap-5 2xl:w-3/4">
+        {infoCards.map((card) => {
           return (
             <Card className="flex-1 h-full" key={card.title}>
               <CardContent>
                 <CardHeader className="flex items-center">
-                  {<card.icon className="w-7 h-7 text-indigo-500" />}
+                  {<card.icon className="text-indigo-500 w-7 h-7" />}
 
-                  <h3 className="text-xl">{card.title}</h3>
+                  <h3 className="text-lg">{card.title}</h3>
                 </CardHeader>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
                   {card.tags.map((tag) => (
-                    <div className="bg-secondary rounded-md px-3 py-2" key={tag}>
-                      {tag}
-                    </div>
+                    <Button
+                      variant="secondary"
+                      className="flex justify-between gap-4"
+                      key={tag}
+                      onClick={() => {
+                        setInputField(tag);
+                        inputFieldRef?.focus();
+                      }}
+                    >
+                      <span>{tag}</span>
+                      <span>&rarr;</span>
+                    </Button>
                   ))}
                 </div>
               </CardContent>
