@@ -2,7 +2,6 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { fetchProtocol } from '@/lib/axios.ts';
-import { validPath } from '@/lib/routing';
 import { handleAuth } from '@/lib/web5Tools';
 import { paths } from '@/router';
 import { didAtom, protocolAtom } from '@/store/index.ts';
@@ -46,7 +45,7 @@ const LoginCard = () => {
       }
 
       await handleAuth(protocol, setRealDID);
-      navigate(validPath(paths.chat_with_id, { id: 'ai' }));
+      navigate(paths.chat);
     } catch (error) {
       toastError('An error has occured. Please try again later');
     } finally {
