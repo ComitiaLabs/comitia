@@ -92,7 +92,10 @@ const Chat = () => {
 
   return (
     <>
-      <div className="h-full pr-1 overflow-scroll overflow-x-hidden" ref={containerRef}>
+      <div
+        className="h-full pr-1 overflow-scroll overflow-x-hidden md:no-scrollbar"
+        ref={containerRef}
+      >
         {loadingMessages ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loader2Icon size={100} className="text-primary animate-[spin_3s_linear_infinite]" />
