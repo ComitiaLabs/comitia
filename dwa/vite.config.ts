@@ -32,8 +32,8 @@ export default defineConfig(({ command }) => {
               "type": "image/png"
             }
           ],
-          "theme_color": "#0f172a",
-          "background_color": "#f1f5f9",
+          "theme_color": "#f1f5f9" ,
+          "background_color": "#0f172a",
           "display": "standalone"
         },
         devOptions: {
