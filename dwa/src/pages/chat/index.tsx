@@ -74,7 +74,7 @@ const MenuSm = () => {
       </SheetTrigger>
 
       <SheetContent className="p-0 bg-secondary" side={'left'}>
-        <MenuMd />
+        <MenuMd className="pt-12" />
       </SheetContent>
     </Sheet>
   );
