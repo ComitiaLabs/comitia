@@ -18,14 +18,23 @@ export default defineConfig(({ command }) => {
       VitePWA({
         registerType: 'autoUpdate',
         manifest: {
-          icons: [
+          "name": "Comitia Help",
+          "short_name": "Comitia",
+          "icons": [
             {
-              src: '/comitia-logo.jpg',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable'
+              "src": "/android-chrome-192x192.png",
+              "sizes": "192x192",
+              "type": "image/png"
+            },
+            {
+              "src": "/android-chrome-512x512.png",
+              "sizes": "512x512",
+              "type": "image/png"
             }
-          ]
+          ],
+          "theme_color": "#0f172a",
+          "background_color": "#f1f5f9",
+          "display": "standalone"
         },
         devOptions: {
           enabled: command === 'serve' ? true : false
