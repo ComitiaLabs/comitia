@@ -86,7 +86,7 @@ body,
 
 /* width */
 ::-webkit-scrollbar {
-  width: 0.6rem;
+  width: 0.3rem;
 }
 
 /* Track */
@@ -97,7 +97,7 @@ body,
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground));
-  border-radius: 0.3rem;
+  border-radius: 0.25rem;
 }
 
 /* Handle on hover */

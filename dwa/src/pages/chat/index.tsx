@@ -74,7 +74,7 @@ const MenuSm = () => {
       </SheetTrigger>
 
       <SheetContent className="p-0 bg-secondary" side={'left'}>
-        <MenuMd />
+        <MenuMd className="pt-12" />
       </SheetContent>
     </Sheet>
   );
@@ -84,7 +84,7 @@ const Wrapper = () => {
   const isMDDevice = useMediaQuery('only screen and (min-width: 768px)');
 
   return (
-    <div className="h-full grid grid-rows-[min-content_1fr] grid-cols-[max(0px,_15rem)_1fr] xl:grid-cols-[max(0px,_20rem)_1fr] md:grid-rows-none bg-secondary relative isolate overflow-hidden">
+    <div className="h-full grid grid-rows-[min-content_1fr] md:grid-cols-[max(0px,_15rem)_1fr] xl:grid-cols-[max(0px,_20rem)_1fr] md:grid-rows-none bg-secondary relative isolate overflow-hidden">
       <Splash />
 
       {isMDDevice ? (
@@ -93,13 +93,13 @@ const Wrapper = () => {
         </div>
       ) : (
         <>
-          <div className="p-2 grid grid-cols-2">
+          <div className="p-2 grid grid-cols-3">
             <div>
               <MenuSm />
             </div>
 
-            <div className="text-center">
-              <span className="text-lg font-semibold text-foreground">Comitia</span>
+            <div className="flex flex-col items-center">
+              <img className="w-12 h-12 mr-1" src="/comitia-logo-transparent.png" />
             </div>
 
             <div />
