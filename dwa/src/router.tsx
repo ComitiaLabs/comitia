@@ -1,7 +1,8 @@
-import Layout from '@/components/layout/index.tsx';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import Layout from './components/layout/index.tsx';
 import ProtectedRoute from './hoc/protectedRoute.tsx';
 import Chat from './pages/chat/index.tsx';
+import ErrorPage from './pages/error/index.tsx';
 import Home from './pages/home/index.tsx';
 
 export const paths = {
@@ -15,7 +16,8 @@ export type AppPath = (typeof paths)[keyof typeof paths];
 export const routes: RouteObject[] = [
   {
     path: paths.base,
-    Component: Layout,
+    errorElement: <ErrorPage />,
+    element: <Layout />,
     children: [
       {
         path: paths.home,
