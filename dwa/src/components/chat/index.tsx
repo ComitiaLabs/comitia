@@ -88,9 +88,8 @@ const Chat = () => {
   return (
     <>
       <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
-        <Placeholder />
-        {chats.length > 0 ? (
-          ''
+        {chats.length <= 0 ? (
+          <Placeholder />
         ) : (
           <div className="flex flex-col gap-2 pr-3">
             {chats.map((chat, ind) => {
