@@ -20,7 +20,7 @@ const Bubble = (props: IBubble) => {
       <div
         className={cn(
           'max-w-[70%] bg-primary text-primary-foreground rounded-md p-3 transition-all',
-          !isMe && 'bg-secondary text-secondary-foreground'
+          !isMe && 'bg-white text-secondary-foreground'
         )}
       >
         {text.length <= 0 && <PulsingDots />}
@@ -88,8 +88,9 @@ const Chat = () => {
   return (
     <>
       <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
-        {chats.length <= 0 ? (
-          <Placeholder />
+        <Placeholder />
+        {chats.length > 0 ? (
+          ''
         ) : (
           <div className="flex flex-col gap-2 pr-3">
             {chats.map((chat, ind) => {
