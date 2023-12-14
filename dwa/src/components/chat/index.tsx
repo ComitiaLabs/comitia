@@ -88,7 +88,11 @@ const Chat = () => {
   return (
     <>
       <div className="h-full overflow-scroll overflow-x-hidden" ref={containerRef}>
-        {chats.length <= 0 ? (
+        {loading ? (
+          <div className="w-full h-full flex justify-center items-center">
+            <Loader2Icon size={100} className="text-primary animate-[spin_3s_linear_infinite]" />
+          </div>
+        ) : chats.length <= 0 ? (
           <Placeholder />
         ) : (
           <div className="flex flex-col gap-2 pr-3">
