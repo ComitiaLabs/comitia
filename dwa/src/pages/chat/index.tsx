@@ -84,7 +84,7 @@ const Wrapper = () => {
   const isMDDevice = useMediaQuery('only screen and (min-width: 768px)');
 
   return (
-    <div className="h-full grid grid-rows-[min-content_1fr] grid-cols-[max(0px,_15rem)_1fr] xl:grid-cols-[max(0px,_20rem)_1fr] md:grid-rows-none bg-secondary relative isolate overflow-hidden">
+    <div className="h-full grid grid-rows-[min-content_1fr] md:grid-cols-[max(0px,_15rem)_1fr] xl:grid-cols-[max(0px,_20rem)_1fr] md:grid-rows-none bg-secondary relative isolate overflow-hidden">
       <Splash />
 
       {isMDDevice ? (
