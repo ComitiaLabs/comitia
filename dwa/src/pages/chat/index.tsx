@@ -1,53 +1,63 @@
+import Chat from '@/components/chat';
 import ProfileMenu from '@/components/profileMenu';
+import Splash from '@/components/splashes';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import useGetChatList from '@/hook/useGetChatList';
-import { validPath } from '@/lib/routing';
 import { paths } from '@/router';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { Menu, PenSquare } from 'lucide-react';
+import { DownloadCloud, Menu, PenSquare } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useOutlet, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-const MenuMd = () => {
+type MenuProps = {
+  className?: string;
+};
+const MenuMd = ({ className = '' }: MenuProps) => {
   const { data } = useGetChatList();
   const { id: currentPage } = useParams();
 
   return (
-    <div className="p-3 bg-secondary grid grid-rows-[min-content_1fr_min-content] flex-col items-stretch gap-2 h-full">
-      <div>
-        <div className="text-center">
-          <span className="text-lg font-semibold text-foreground">Comitia</span>
-        </div>
-        <Button
-          className="w-full flex justify-between"
-          disabled
-          variant="ghost"
-        >
+    <div
+      className={`p-3 bg-white grid grid-rows-[min-content_1fr_min-content] flex-col items-stretch gap-2 h-full ${className}`}
+    >
+      <div className="flex gap-2 flex-col">
+        <Button className="w-full flex justify-between" disabled variant="outline">
           Create New Chat
           <PenSquare className="w-4 h-4" />
         </Button>
+        <Separator />
       </div>
 
       <div>
-        {data?.map(item => {
+        {data?.map((item) => {
           const isSelected = item.id === currentPage;
           return (
             <Button
               key={item.id}
-              className="w-full"
+              className="w-full justify-start"
               variant={isSelected ? 'default' : 'outline'}
               asChild
             >
-              <Link to={validPath(paths.chat_with_id, { id: item.id })}>
-                {item.name}
-              </Link>
+              <Link to={paths.chat}>{item.name}</Link>
             </Button>
           );
         })}
       </div>
 
-      <ProfileMenu />
+      <div className="flex gap-2 flex-col">
+        <Separator />
+        <Button
+          className="w-full flex items-center justify-between gap-2"
+          variant="secondary"
+          disabled
+        >
+          Download Records
+          <DownloadCloud className="w-4 h-4" />
+        </Button>
+        <ProfileMenu />
+      </div>
     </div>
   );
 };
@@ -57,7 +67,7 @@ const MenuSm = () => {
 
   return (
     <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <Menu />
         </Button>
@@ -70,25 +80,26 @@ const MenuSm = () => {
   );
 };
 
-const Chat = () => {
-  const outlet = useOutlet();
+const Wrapper = () => {
   const isMDDevice = useMediaQuery('only screen and (min-width: 768px)');
 
   return (
-    <div className="h-full grid grid-rows-[min-content_1fr] md:grid-rows-none md:grid-cols-4 xl:grid-cols-8">
+    <div className="h-full grid grid-rows-[min-content_1fr] grid-cols-[max(0px,_15rem)_1fr] xl:grid-cols-[max(0px,_20rem)_1fr] md:grid-rows-none bg-secondary relative isolate overflow-hidden">
+      <Splash />
+
       {isMDDevice ? (
-        <MenuMd />
+        <div className="p-3">
+          <MenuMd className="rounded-lg overflow-hidden" />
+        </div>
       ) : (
         <>
-          <div className="p-2 grid grid-cols-3">
+          <div className="p-2 grid grid-cols-2">
             <div>
               <MenuSm />
             </div>
 
             <div className="text-center">
-              <span className="text-lg font-semibold text-foreground">
-                Comitia
-              </span>
+              <span className="text-lg font-semibold text-foreground">Comitia</span>
             </div>
 
             <div />
@@ -96,11 +107,12 @@ const Chat = () => {
         </>
       )}
 
-      <div className="col-span-full md:col-start-2 p-3 lg:px-16 xl:px-60 2xl:px-96 h-full flex flex-col justify-between overflow-auto">
-        {outlet || 'Please select a chat from the sidebar'}
+      <div className="p-3 h-full flex flex-col justify-between overflow-auto 2xl:px-80">
+        <Chat />
       </div>
+      <Splash />
     </div>
   );
 };
 
-export default Chat;
+export default Wrapper;
