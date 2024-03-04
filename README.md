@@ -40,13 +40,13 @@ REPLICATE_API_TOKEN= // Replicate token
 
 ## Built With
 
-- [React](reactjs.org) - Javacript library for building user interfaces.
-- [TailwindCSS](tailwindcss.com) - Utility first CSS framework.
-- [Vite](vitejs.dev) - Frontend Tooling.
-- [Replicate AI](replicate.com) - A Decentralized web platform.
-- [Web 5](developer.tbd.website/projects/web5/) - A Decentralized web platform.
-- [shadcn/ui](ui.shadcn.com/) - A tailwind component Library.
-- [jotai](jotai.org/) - Lightweight state management library.
+- [React](https://reactjs.org) - Javacript library for building user interfaces.
+- [TailwindCSS](https://tailwindcss.com) - Utility first CSS framework.
+- [Vite](https://vitejs.dev) - Frontend Tooling.
+- [Replicate AI](https://replicate.com) - A Decentralized web platform.
+- [Web 5](https://developer.tbd.website/projects/web5/) - A Decentralized web platform.
+- [shadcn/ui](https://ui.shadcn.com/) - A tailwind component Library.
+- [jotai](https://jotai.org/) - Lightweight state management library.
 
 ## Contributors
 
