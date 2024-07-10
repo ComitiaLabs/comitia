@@ -1,5 +1,6 @@
 import { ProtocolDefinition } from '@tbd54566975/dwn-sdk-js';
 import { Web5 } from '@web5/api';
+import posthog from '@/posthog';
 
 export const validateDIDHasProtocol = async (web5: Web5, protocol: ProtocolDefinition) => {
   const response = await web5.dwn.protocols.query({
@@ -29,17 +30,21 @@ export const installProtocols = async (
   });
 
   if (!instance.protocol) {
+    posthog.capture('protocol_instance_error', { message: 'Protocol instance not created' });
     throw new Error('Protocol instance not created');
   }
 
   await instance.protocol.send(did);
+  posthog.capture('protocol_instance_created', { protocol: instance.protocol });
 };
 
 export const getWeb5Instance = async () => {
   const { web5, did } = await Web5.connect({});
   if (!web5) {
+    posthog.capture('web5_instance_error', { message: 'Failed to get web5 instance' });
     throw new Error('Failed to get web5 instance');
   }
+  posthog.capture('web5_instance_created');
   return { web5, did };
 };
 

@@ -11,8 +11,10 @@ import { Loader2, MonitorSmartphone, Wallet } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
+import { usePostHog } from 'posthog-js/react';
 
 const LoginCard = () => {
+  const posthog = usePostHog();
   const setRealDID = useSetAtom(didAtom);
   const [protocol, setProtocol] = useAtom(protocolAtom);
   const [loading, setLoading] = useState(false);
@@ -20,13 +22,13 @@ const LoginCard = () => {
   const { toast } = useToast();
 
   const toastError = useCallback(
-    (err?: unknown) => {
+    (err: string = 'Please refresh the page or try again later') => {
       console.error(err);
 
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: 'Please refresh the page or try again later'
+        description: err
       });
     },
     [toast]
@@ -39,7 +41,9 @@ const LoginCard = () => {
   const handleLocalLogin = async () => {
     try {
       setLoading(true);
+
       if (!protocol) {
+        posthog?.capture('login_error', { message: 'Protocol is not defined' });
         toastError('Protocol is not defined. Please refresh the page');
         return;
       }
@@ -47,6 +51,7 @@ const LoginCard = () => {
       await handleAuth(protocol, setRealDID);
       navigate(paths.chat);
     } catch (error) {
+      posthog?.capture('login_error', { message: 'An error has occured', error });
       toastError('An error has occured. Please try again later');
     } finally {
       setLoading(false);

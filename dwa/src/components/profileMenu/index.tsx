@@ -8,9 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel
 } from '../ui/dropdown-menu';
+import { usePostHog } from 'posthog-js/react';
 
 const ProfileMenu = () => {
+  const posthog = usePostHog();
   const logout = useLogout();
+
+  const openProfile = () => {
+    posthog?.capture('open_profile');
+  };
 
   return (
     <DropdownMenu>
@@ -27,7 +33,7 @@ const ProfileMenu = () => {
       <DropdownMenuContent>
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>
+        <DropdownMenuItem disabled onClick={openProfile}>
           <div className="w-full flex items-center gap-2">
             <BookUser className="w-4 h-4" />
             Profile
