@@ -12,6 +12,8 @@ export const env = createEnv({
 
   client: {
     VITE_WS_URL: z.string().default('http://localhost:3000'),
+    VITE_PUBLIC_POSTHOG_KEY: z.string(),
+    VITE_PUBLIC_POSTHOG_HOST: z.string()
   },
 
   /**
@@ -20,6 +22,8 @@ export const env = createEnv({
    */
   runtimeEnvStrict: {
     VITE_WS_URL: import.meta.env.VITE_WS_URL,
+    VITE_PUBLIC_POSTHOG_KEY: import.meta.env.VITE_PUBLIC_POSTHOG_KEY,
+    VITE_PUBLIC_POSTHOG_HOST: import.meta.env.VITE_PUBLIC_POSTHOG_HOST
   },
 
   /**
@@ -35,5 +39,5 @@ export const env = createEnv({
    * In order to solve these issues, we recommend that all new projects
    * explicitly specify this option as true.
    */
-  emptyStringAsUndefined: true,
+  emptyStringAsUndefined: true
 });

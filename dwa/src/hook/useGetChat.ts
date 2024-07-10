@@ -3,6 +3,7 @@ import { Chat, protocolAtom, updateChatsAtom } from '@/store';
 import { useAtom, useAtomValue } from 'jotai';
 import { useEffect, useState } from 'react';
 import useSubscription from './useSubscription';
+import { usePostHog } from 'posthog-js/react';
 
 const handleChatParse = (messages: Awaited<ReturnType<typeof getMessages>>): Chat[] => {
   return messages.map((message) => ({
@@ -12,6 +13,7 @@ const handleChatParse = (messages: Awaited<ReturnType<typeof getMessages>>): Cha
 };
 
 const useGetChat = () => {
+  const posthog = usePostHog();
   const protocol = useAtomValue(protocolAtom);
   const [chats, setChats] = useAtom(updateChatsAtom);
 
@@ -28,6 +30,8 @@ const useGetChat = () => {
     setChats({ type: 'add', payload: [newMessage, newResponse] });
 
     socket.emit('message', message);
+    posthog?.capture('send_message');
+
     setIsThinking(true);
   };
 
@@ -41,6 +45,7 @@ const useGetChat = () => {
 
   useEffect(() => {
     socket.on('ready', function (response: string) {
+      posthog?.capture('chat_ready');
       console.log('chat ready:', response);
       setChatReady(true);
     });
@@ -65,8 +70,6 @@ const useGetChat = () => {
     if (chatReady) {
       getMessages(protocol?.protocol)
         .then(async (messages) => {
-          console.log('messages:', messages);
-
           const parsedMessages = handleChatParse(messages);
           setChats({ type: 'add', payload: parsedMessages });
           setLoading(false);

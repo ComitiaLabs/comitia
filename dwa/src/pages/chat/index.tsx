@@ -8,6 +8,7 @@ import useGetChatList from '@/hook/useGetChatList';
 import { paths } from '@/router';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import { DownloadCloud, Menu, PenSquare } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -15,15 +16,29 @@ type MenuProps = {
   className?: string;
 };
 const MenuMd = ({ className = '' }: MenuProps) => {
+  const posthog = usePostHog();
   const { data } = useGetChatList();
   const { id: currentPage } = useParams();
+
+  const createNewChat = () => {
+    posthog?.capture('create_new_chat');
+  };
+
+  const downloadHealthRecords = () => {
+    posthog?.capture('download_health_records');
+  };
 
   return (
     <div
       className={`p-3 bg-white grid grid-rows-[min-content_1fr_min-content] flex-col items-stretch gap-2 h-full ${className}`}
     >
       <div className="flex gap-2 flex-col">
-        <Button className="w-full flex justify-between" disabled variant="outline">
+        <Button
+          className="w-full flex justify-between"
+          disabled
+          variant="outline"
+          onClick={createNewChat}
+        >
           Create New Chat
           <PenSquare className="w-4 h-4" />
         </Button>
@@ -52,6 +67,7 @@ const MenuMd = ({ className = '' }: MenuProps) => {
           className="w-full flex items-center justify-between gap-2"
           variant="secondary"
           disabled
+          onClick={downloadHealthRecords}
         >
           Download Records
           <DownloadCloud className="w-4 h-4" />
